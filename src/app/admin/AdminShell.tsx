@@ -7,7 +7,6 @@ const links = [
   { href: '/admin', label: 'Dasbor' },
   { href: '/admin/leads', label: 'Prospek' },
   { href: '/admin/blog', label: 'Blog' },
-  { href: '/admin/konten', label: 'Konten', ownerOnly: true },
   { href: '/admin/halaman', label: 'Halaman', ownerOnly: true },
   { href: '/admin/pengaturan', label: 'Pengaturan', ownerOnly: true },
   { href: '/admin/mcp', label: 'Otomasi', ownerOnly: true },

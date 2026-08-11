@@ -6,6 +6,8 @@ import { AnswerBox, Breadcrumbs, CtaBand, Disclaimer, SectionHead } from '@/comp
 import { getCities } from '@/lib/content-db';
 import { IconArrow, IconMapPin } from '@/components/Icons';
 import { site } from '@/lib/site';
+import { getPageCopy } from '@/lib/page-copy';
+import { sh } from '@/lib/page-slots';
 
 const PATH = '/area-layanan';
 
@@ -25,9 +27,10 @@ export async function generateMetadata() {
 }
 
 export default async function AreaLayananPage() {
-  const [o, cities] = await Promise.all([
+  const [o, cities, copy] = await Promise.all([
     pageOverride(PATH),
     getCities(),
+    getPageCopy(PATH),
   ]);
   const crumbs = [
     { name: 'Beranda', path: '/' },
@@ -59,7 +62,7 @@ export default async function AreaLayananPage() {
       </section>
 
       <section className="container-page pb-14">
-        <SectionHead eyebrow="Kota Utama" title="Kota dengan penanganan paling rutin" as="h2" />
+        <SectionHead {...sh(copy, 'kota-utama', { eyebrow: 'Kota Utama', title: 'Kota dengan penanganan paling rutin' })} as="h2" />
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {cities.map((c) => (
             <Link key={c.slug} href={`${PATH}/${c.slug}`} className="card group flex items-start gap-4 hover:shadow-lift">

@@ -31,6 +31,8 @@ import {
 import { iconMap, IconArrow, IconCheck, IconWhatsApp, IconMapPin } from '@/components/Icons';
 import { defaultWaMessage, site, waLink } from '@/lib/site';
 import { TrackedLink } from '@/components/TrackedLink';
+import { getPageCopy } from '@/lib/page-copy';
+import { sh } from '@/lib/page-slots';
 
 const PATH = '/';
 
@@ -58,7 +60,7 @@ const fallbackTrustPoints = [
 ];
 
 export default async function HomePage() {
-  const [o, coreServices, epoxySystems, workSteps, whyChooseUs, generalFaqs, cities, stats] =
+  const [o, coreServices, epoxySystems, workSteps, whyChooseUs, generalFaqs, cities, stats, copy] =
     await Promise.all([
       pageOverride(PATH),
       getCoreServices(),
@@ -68,6 +70,7 @@ export default async function HomePage() {
       getGeneralFaqs(),
       getCities(),
       getStats(),
+      getPageCopy(PATH),
     ]);
 
   const trustPoints = stats.length ? stats : fallbackTrustPoints;
@@ -186,11 +189,7 @@ export default async function HomePage() {
       <section className="container-page py-14 sm:py-16">
         <div className="grid gap-8 lg:grid-cols-[1.1fr_.9fr] lg:items-start">
           <div>
-            <SectionHead
-              eyebrow="Ringkasan"
-              title="Apa itu jasa epoxy lantai?"
-              as="h2"
-            />
+            <SectionHead {...sh(copy, 'ringkasan', { eyebrow: 'Ringkasan', title: 'Apa itu jasa epoxy lantai?' })} as="h2" />
             <AnswerBox override={o.intro}>
               <p>
                 Epoxy flooring adalah sistem pelapisan lantai yang dirancang untuk meningkatkan
@@ -231,12 +230,7 @@ export default async function HomePage() {
       {/* -------------------------------------------------------- LAYANAN */}
       <section className="bg-cream-100 py-14 sm:py-16">
         <div className="container-page">
-          <SectionHead
-            eyebrow="Layanan Kami"
-            title="Solusi konstruksi industri yang kami kerjakan"
-            lead="Selain epoxy flooring, kami menangani clean room, sandwich panel, ducting HVAC, serta konstruksi dan renovasi industri."
-            center
-          />
+          <SectionHead {...sh(copy, 'layanan-kami', { eyebrow: 'Layanan Kami', title: 'Solusi konstruksi industri yang kami kerjakan', lead: 'Selain epoxy flooring, kami menangani clean room, sandwich panel, ducting HVAC, serta konstruksi dan renovasi industri.' })} center />
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {coreServices.map((s) => {
               const Icon = iconMap[s.icon as keyof typeof iconMap] ?? iconMap.layers;
@@ -260,11 +254,7 @@ export default async function HomePage() {
 
       {/* --------------------------------------------------------- SISTEM */}
       <section className="container-page py-14 sm:py-16">
-        <SectionHead
-          eyebrow="Sistem & Harga"
-          title="Pilihan ketebalan dan harga per meter persegi"
-          lead="Angka berikut diambil dari pricelist resmi perusahaan. Harga per m² turun seiring bertambahnya luas area."
-        />
+        <SectionHead {...sh(copy, 'sistem-harga', { eyebrow: 'Sistem & Harga', title: 'Pilihan ketebalan dan harga per meter persegi', lead: 'Angka berikut diambil dari pricelist resmi perusahaan. Harga per m² turun seiring bertambahnya luas area.' })} />
         <div className="mt-8 overflow-x-auto rounded-2xl border border-navy-900/10 shadow-card">
           <table className="w-full min-w-[720px] border-collapse bg-white text-left text-sm">
             <caption className="sr-only">
@@ -333,7 +323,7 @@ export default async function HomePage() {
       {/* ----------------------------------------------------- PORTOFOLIO */}
       <section className="container-page py-14 sm:py-16">
         <div className="flex flex-wrap items-end justify-between gap-4">
-          <SectionHead eyebrow="Portofolio" title="Dokumentasi proyek terbaru" />
+          <SectionHead {...sh(copy, 'portofolio', { eyebrow: 'Portofolio', title: 'Dokumentasi proyek terbaru' })} />
           <Link href="/portofolio" className="btn-outline !py-2.5 text-sm">
             Semua Proyek
           </Link>
@@ -362,12 +352,7 @@ export default async function HomePage() {
       {/* -------------------------------------------------- MENGAPA KAMI */}
       <section className="bg-cream-100 py-14 sm:py-16">
         <div className="container-page">
-          <SectionHead
-            eyebrow="Mengapa Kami"
-            title={`Mengapa memilih ${site.legalName}?`}
-            lead="Lima hal yang menjadi komitmen kerja kami, sebagaimana tercantum dalam company profile perusahaan."
-            center
-          />
+          <SectionHead {...sh(copy, 'mengapa-kami', { eyebrow: 'Mengapa Kami', title: `Mengapa memilih ${site.legalName}?`, lead: 'Lima hal yang menjadi komitmen kerja kami, sebagaimana tercantum dalam company profile perusahaan.' })} center />
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {whyChooseUs.map((w) => (
               <div key={w.n} className="card">
@@ -384,11 +369,7 @@ export default async function HomePage() {
 
       {/* ---------------------------------------------------- AREA LAYANAN */}
       <section className="container-page py-14 sm:py-16">
-        <SectionHead
-          eyebrow="Area Layanan"
-          title="Melayani proyek di seluruh Indonesia"
-          lead="Kantor kami di Kediri, Jawa Timur, dengan proyek tersebar di Jawa Timur, Madura, Jawa Tengah, hingga Jakarta. Untuk lokasi lain, biaya mobilisasi dikonfirmasi terlebih dahulu."
-        />
+        <SectionHead {...sh(copy, 'area-layanan', { eyebrow: 'Area Layanan', title: 'Melayani proyek di seluruh Indonesia', lead: 'Kantor kami di Kediri, Jawa Timur, dengan proyek tersebar di Jawa Timur, Madura, Jawa Tengah, hingga Jakarta. Untuk lokasi lain, biaya mobilisasi dikonfirmasi terlebih dahulu.' })} />
         <ul className="mt-7 flex flex-wrap gap-2.5">
           {cities.map((c) => (
             <li key={c.slug}>

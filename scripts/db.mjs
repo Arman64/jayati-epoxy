@@ -37,7 +37,7 @@ const pool = new pg.Pool({
 const cmd = process.argv[2];
 
 async function migrate() {
-  for (const f of ['schema.sql', 'schema-cms.sql', 'schema-blocks.sql']) {
+  for (const f of ['schema.sql', 'schema-cms.sql', 'schema-blocks.sql', 'schema-pagecopy.sql']) {
     const file = path.join(process.cwd(), 'db', f);
     if (!existsSync(file)) continue;
     await pool.query(readFileSync(file, 'utf8'));

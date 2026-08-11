@@ -27,12 +27,70 @@ WhatsApp rusak diam-diam dan tombol berhenti berfungsi.
 
 ---
 
-## 2. Konten situs — `/admin/konten`
+## 2. Halaman website — `/admin/halaman`
 
-Hanya **Pemilik**. Di sinilah data yang dipakai berulang di banyak halaman
-disimpan satu kali. Mengubahnya di sini akan mengubah **seluruh halaman**
-yang memakainya — termasuk beranda, halaman harga, landing page iklan, dan
-halaman buatan sendiri.
+Hanya **Pemilik**. Satu menu untuk semua isi website. Tidak ada lagi menu
+"Konten" yang terpisah — pengaturan halaman dan isinya kini di tempat yang
+sama. Tautan lama `/admin/konten` otomatis diarahkan ke sini.
+
+Menu ini punya dua tab:
+
+- **Halaman** — daftar semua halaman. Klik salah satu untuk mengubah isinya.
+- **Dipakai bersama** — data yang muncul di banyak halaman sekaligus.
+
+### Tab "Halaman"
+
+Setiap halaman ditampilkan sebagai kartu berisi alamat dan jumlah bagian teks
+yang bisa diubah. Klik untuk membukanya. Di dalamnya ada dua tab lagi:
+
+**a. Teks bagian.** Judul tiap bagian halaman bawaan bisa Anda tulis ulang —
+teks kecil di atas judul, judul bagian, dan kalimat pengantarnya. Contoh di
+Beranda: Ringkasan, Layanan Kami, Sistem & Harga, Portofolio, Mengapa Kami,
+dan Area Layanan.
+
+Aturannya sederhana:
+
+- **Kolom yang dibiarkan kosong memakai teks bawaan.** Teks bawaannya sendiri
+  tertulis abu-abu di dalam kolom, jadi Anda selalu tahu apa yang akan tampil.
+- Bagian yang sudah Anda ubah diberi tanda **Diubah**, dan tombol
+  **Kembalikan ke bawaan** akan muncul.
+- Simpan per bagian. Perubahan langsung tampil di halaman publik.
+
+Yang **tidak** bisa diubah dari sini: susunan bagian, tata letak, dan
+komponennya. Itu dipegang kode supaya kecepatan, struktur SEO, dan JSON-LD
+halaman tidak bisa rusak karena salah klik.
+
+**b. Ganti foto.** Bagian yang memuat foto punya tombol **Ganti foto** yang
+membuka pustaka gambar. Anda bisa mengunggah berkas baru (JPG, PNG, atau WebP,
+maksimal 8 MB, minimal 200×200 piksel) atau memilih gambar yang sudah pernah
+diunggah. Tombol **Pakai foto bawaan** mengembalikannya seperti semula.
+
+**Teks alternatif wajib diisi** saat mengunggah. Teks ini dibaca pembaca layar
+dan dipakai Google untuk memahami isi foto. Ukuran gambar dibaca otomatis dari
+berkasnya, sehingga halaman tidak bergeser saat foto dimuat.
+
+Berkas yang menyamar sebagai gambar akan ditolak — isi berkas benar-benar
+diperiksa, bukan sekadar namanya.
+
+**c. SEO & pembuka.** Tab kedua di tiap halaman:
+
+- **Judul (title tag)** — muncul di tab browser dan hasil Google. Ideal 30–65 karakter.
+- **Meta description** — ringkasan di hasil pencarian. Ideal 70–165 karakter.
+- **Judul utama (H1)** — judul besar di halaman.
+- **Paragraf pembuka** — teks di kotak "Jawaban singkat".
+- **Gambar OG** — gambar saat tautan dibagikan ke WhatsApp/Facebook.
+- **Jangan indeks** — halaman tetap bisa dibuka, tapi diminta tidak muncul di Google.
+- **Sertakan di sitemap** + **prioritas**.
+
+Penghitung karakter berubah kuning bila panjang teks di luar rentang ideal.
+Halaman yang di-*noindex* atau dikeluarkan dari sitemap otomatis hilang dari
+`sitemap.xml` — tidak ada langkah manual tambahan.
+
+### Tab "Dipakai bersama"
+
+Data yang muncul di beberapa halaman sekaligus, disimpan satu kali. Mengubahnya
+akan mengubah **seluruh halaman** yang memakainya — termasuk beranda, halaman
+harga, landing page iklan, dan halaman buatan sendiri.
 
 | Koleksi | Isi | Terpakai di |
 |---|---|---|
@@ -59,26 +117,9 @@ mengubah apa tetap ada.
 
 ---
 
-## 3. Pengaturan halaman — `/admin/halaman`
+## 3. Halaman buatan sendiri
 
-Hanya **Pemilik**. Mengatur 13 halaman publik satu per satu:
-
-- **Judul (title tag)** — muncul di tab browser dan hasil Google. Ideal 30–65 karakter.
-- **Meta description** — ringkasan di hasil pencarian. Ideal 70–165 karakter.
-- **Judul utama (H1)** — judul besar di halaman.
-- **Paragraf pembuka** — teks di kotak "Jawaban singkat".
-- **Gambar OG** — gambar saat tautan dibagikan ke WhatsApp/Facebook.
-- **Jangan indeks** — halaman tetap bisa dibuka, tapi diminta tidak muncul di Google.
-- **Sertakan di sitemap** + **prioritas**.
-
-Penghitung karakter berubah kuning bila panjang teks di luar rentang ideal.
-
-Halaman yang di-*noindex* atau dikeluarkan dari sitemap otomatis hilang dari
-`sitemap.xml` — tidak ada langkah manual tambahan.
-
-### Membuat halaman baru
-
-Di bagian bawah `/admin/halaman` ada **Halaman buatan sendiri**. Tekan
+Di bagian bawah tab **Halaman** ada **Halaman buatan sendiri**. Tekan
 **+ Halaman baru**, isi nama halaman, lalu alamatnya terisi otomatis (bisa
 diubah). Halaman baru selalu lahir sebagai **draf** — belum bisa dibuka
 pengunjung dan belum masuk sitemap sampai Anda menekan **Terbitkan**.
@@ -88,7 +129,8 @@ lainnya) akan ditolak, begitu pula alamat berhuruf besar atau berspasi.
 
 ### Menyusun isi halaman
 
-Buka halaman buatan Anda untuk masuk ke penyusun seksi. Tersedia 15 jenis seksi:
+Buka halaman buatan Anda untuk masuk ke penyusun seksi. Berbeda dengan halaman
+bawaan, di sini susunannya bebas. Tersedia 15 jenis seksi:
 
 | Seksi | Isi |
 |---|---|
@@ -96,13 +138,13 @@ Buka halaman buatan Anda untuk masuk ke penyusun seksi. Tersedia 15 jenis seksi:
 | Jawaban singkat | Kotak jawaban 40–60 kata di awal halaman |
 | Teks bebas | Satu judul H2 dan beberapa paragraf |
 | Daftar centang | Judul dengan poin bertanda centang |
-| Kartu sistem epoxy | Otomatis dari Konten → Sistem Epoxy, lengkap harga |
+| Kartu sistem epoxy | Otomatis dari tab Dipakai bersama → Sistem Epoxy |
 | Tabel harga | Pricelist per m² menurut tier luas |
 | Kalkulator estimasi | Kalkulator biaya interaktif |
-| Tahapan pengerjaan | Otomatis dari Konten → Tahapan Kerja |
-| Alasan memilih kami | Otomatis dari Konten → Alasan Memilih Kami |
-| Kartu layanan | Otomatis dari Konten → Layanan Utama |
-| Angka kepercayaan | Otomatis dari Konten → Angka Kepercayaan |
+| Tahapan pengerjaan | Otomatis dari Tahapan Kerja |
+| Alasan memilih kami | Otomatis dari Alasan Memilih Kami |
+| Kartu layanan | Otomatis dari Layanan Utama |
+| Angka kepercayaan | Otomatis dari Angka Kepercayaan |
 | Galeri proyek | Foto proyek asli perusahaan |
 | Daftar FAQ | Dari FAQ Umum atau FAQ Harga + JSON-LD FAQPage |
 | Formulir penawaran | Formulir lengkap, prospek masuk ke menu Prospek |
@@ -112,16 +154,12 @@ Tiap seksi punya tombol **↑ ↓** untuk urutan, **Sembunyikan** untuk
 menonaktifkan sementara tanpa menghapus, **Ubah isi** untuk mengedit teks, dan
 **Hapus**. Semua perubahan langsung tersimpan.
 
-Seksi yang menarik data dari menu Konten tidak perlu diisi ulang — begitu harga
-atau FAQ diubah di sana, halaman ini ikut berubah.
+Seksi yang menarik data dari tab **Dipakai bersama** tidak perlu diisi ulang —
+begitu harga atau FAQ diubah di sana, halaman ini ikut berubah.
 
 Hero, Jawaban singkat, Kalkulator, dan Formulir hanya boleh satu per halaman.
 Bila Anda tidak memasang seksi Hero, sistem tetap membuatkan satu H1 dari nama
 halaman agar struktur SEO tidak rusak.
-
-**Halaman bawaan** (Beranda, Harga, Kontak, dan seterusnya) tidak bisa disusun
-ulang di sini — tata letaknya dipegang kode agar kecepatan dan SEO-nya terjaga.
-Teksnya diubah lewat kolom di atas atau menu Konten.
 
 ---
 
@@ -246,5 +284,7 @@ dikenal · `422` `tool`/`request_id` kosong · `400` galat saat menjalankan.
 | Dasbor, Prospek | ✅ | ✅ |
 | Blog — tulis, edit, ajukan | ✅ | ✅ |
 | Blog — setujui, terbitkan, hapus | ✅ | ❌ |
-| Konten, Halaman, Pengaturan, Otomasi, Pengguna | ✅ | ❌ |
+| Halaman (teks, foto, SEO, dipakai bersama) | ✅ | ❌ |
+| Pengaturan, Otomasi, Pengguna | ✅ | ❌ |
 | Buat/hapus/terbitkan halaman | ✅ | ❌ |
+| Unggah & hapus gambar | ✅ | ❌ |

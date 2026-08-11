@@ -18,6 +18,8 @@ import { IconArrow, IconClock, IconMapPin, IconWhatsApp } from '@/components/Ico
 import { defaultWaMessage, site, waLink } from '@/lib/site';
 import { TrackedLink } from '@/components/TrackedLink';
 import { QuotationForm } from '@/components/QuotationForm';
+import { getPageCopy } from '@/lib/page-copy';
+import { sh } from '@/lib/page-slots';
 
 const PATH = '/jasa-epoxy-lantai';
 
@@ -52,12 +54,13 @@ const pageSpecificFaqs = [
 ];
 
 export default async function JasaEpoxyPage() {
-  const [o, epoxySystems, generalFaqs, workSteps, cities] = await Promise.all([
+  const [o, epoxySystems, generalFaqs, workSteps, cities, copy] = await Promise.all([
     pageOverride(PATH),
     getEpoxySystems(),
     getGeneralFaqs(),
     getWorkSteps(),
     getCities(),
+    getPageCopy(PATH),
   ]);
 
   // FAQ khusus halaman ini digabung dengan FAQ umum yang dikelola dari CMS.
@@ -141,11 +144,7 @@ export default async function JasaEpoxyPage() {
       {/* SISTEM */}
       <section className="bg-cream-100 py-14">
         <div className="container-page">
-          <SectionHead
-            eyebrow="Jenis Sistem"
-            title="Sistem epoxy dan penggunaannya"
-            lead="Pemilihan sistem menentukan biaya sekaligus umur pakai. Sistem terlalu tipis untuk area berat akan cepat aus, sedangkan sistem berlebihan membuat anggaran tidak efisien."
-          />
+          <SectionHead {...sh(copy, 'jenis-sistem', { eyebrow: 'Jenis Sistem', title: 'Sistem epoxy dan penggunaannya', lead: 'Pemilihan sistem menentukan biaya sekaligus umur pakai. Sistem terlalu tipis untuk area berat akan cepat aus, sedangkan sistem berlebihan membuat anggaran tidak efisien.' })} />
           <div className="mt-9 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {epoxySystems.map((s) => (
               <article key={s.slug} className="card flex flex-col">
@@ -176,7 +175,7 @@ export default async function JasaEpoxyPage() {
 
       {/* TAHAPAN */}
       <section className="container-page py-14">
-        <SectionHead eyebrow="Tahapan Kerja" title="Dari survei sampai serah terima" />
+        <SectionHead {...sh(copy, 'tahapan-kerja', { eyebrow: 'Tahapan Kerja', title: 'Dari survei sampai serah terima' })} />
         <ol className="mt-8 grid gap-4 md:grid-cols-2">
           {workSteps.map((s) => (
             <li key={s.n} className="flex gap-4 rounded-2xl border border-navy-900/10 bg-white p-5 shadow-card">
@@ -214,7 +213,7 @@ export default async function JasaEpoxyPage() {
       <section className="bg-cream-100 py-14">
         <div className="container-page">
           <div className="flex flex-wrap items-end justify-between gap-4">
-            <SectionHead eyebrow="Portofolio" title="Contoh proyek yang kami tangani" />
+            <SectionHead {...sh(copy, 'portofolio', { eyebrow: 'Portofolio', title: 'Contoh proyek yang kami tangani' })} />
             <Link href="/portofolio" className="btn-outline !py-2.5 text-sm">Semua Proyek</Link>
           </div>
           <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -235,7 +234,7 @@ export default async function JasaEpoxyPage() {
 
       {/* AREA */}
       <section className="container-page py-14">
-        <SectionHead eyebrow="Area Layanan" title="Kota yang paling sering kami layani" lead="Layanan tersedia untuk seluruh Indonesia. Untuk luar kota, biaya mobilisasi dikonfirmasi sebelum penawaran." />
+        <SectionHead {...sh(copy, 'area-layanan', { eyebrow: 'Area Layanan', title: 'Kota yang paling sering kami layani', lead: 'Layanan tersedia untuk seluruh Indonesia. Untuk luar kota, biaya mobilisasi dikonfirmasi sebelum penawaran.' })} />
         <ul className="mt-6 flex flex-wrap gap-2.5">
           {cities.map((c) => (
             <li key={c.slug}>
@@ -254,7 +253,7 @@ export default async function JasaEpoxyPage() {
       <section id="form" className="container-page scroll-mt-24 pb-14">
         <div className="grid gap-8 rounded-3xl border border-navy-900/10 bg-cream-50 p-6 shadow-card sm:p-9 lg:grid-cols-[.9fr_1.1fr]">
           <div>
-            <SectionHead eyebrow="Minta Penawaran" title="Kirim detail area Anda" lead="Isi data berikut agar kami dapat menyiapkan estimasi awal dan menjadwalkan survei." />
+            <SectionHead {...sh(copy, 'minta-penawaran', { eyebrow: 'Minta Penawaran', title: 'Kirim detail area Anda', lead: 'Isi data berikut agar kami dapat menyiapkan estimasi awal dan menjadwalkan survei.' })} />
             <div className="mt-6 space-y-3 text-[14px] text-slate-600">
               <p className="flex gap-2.5"><IconClock className="mt-0.5 h-4 w-4 shrink-0 text-forest-700" />{site.openingHours}</p>
               <p className="flex gap-2.5"><IconMapPin className="mt-0.5 h-4 w-4 shrink-0 text-forest-700" />Melayani {site.serviceArea}</p>

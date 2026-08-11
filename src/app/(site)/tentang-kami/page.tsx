@@ -7,6 +7,8 @@ import { AnswerBox, Breadcrumbs, CheckList, CtaBand, Disclaimer, SectionHead } f
 import { site } from '@/lib/site';
 import { companyValues, missionStatements, visionStatement, clientCount } from '@/lib/content';
 import { getWorkSteps } from '@/lib/content-db';
+import { getPageCopy } from '@/lib/page-copy';
+import { sh } from '@/lib/page-slots';
 
 const PATH = '/tentang-kami';
 
@@ -45,9 +47,10 @@ const principles = [
 ];
 
 export default async function TentangPage() {
-  const [o, workSteps] = await Promise.all([
+  const [o, workSteps, copy] = await Promise.all([
     pageOverride(PATH),
     getWorkSteps(),
+    getPageCopy(PATH),
   ]);
   const crumbs = [
     { name: 'Beranda', path: '/' },
@@ -99,11 +102,7 @@ export default async function TentangPage() {
 
       <section className="bg-cream-100 py-14">
         <div className="container-page">
-          <SectionHead
-            eyebrow="Prinsip Kerja"
-            title="Empat hal yang kami pegang di setiap proyek"
-            lead="Prinsip ini kadang membuat penawaran kami tidak menjadi yang termurah, tetapi menghindarkan klien dari biaya perbaikan berulang."
-          />
+          <SectionHead {...sh(copy, 'prinsip-kerja', { eyebrow: 'Prinsip Kerja', title: 'Empat hal yang kami pegang di setiap proyek', lead: 'Prinsip ini kadang membuat penawaran kami tidak menjadi yang termurah, tetapi menghindarkan klien dari biaya perbaikan berulang.' })} />
           <div className="mt-9 grid gap-4 md:grid-cols-2">
             {principles.map((p, i) => (
               <article key={p.title} className="card">
@@ -119,7 +118,7 @@ export default async function TentangPage() {
       <section className="container-page py-14">
         <div className="grid gap-10 lg:grid-cols-2">
           <div>
-            <SectionHead eyebrow="Cara Kerja" title="Alur kerja standar kami" />
+            <SectionHead {...sh(copy, 'cara-kerja', { eyebrow: 'Cara Kerja', title: 'Alur kerja standar kami' })} />
             <ol className="mt-6 space-y-3">
               {workSteps.map((s) => (
                 <li key={s.n} className="flex gap-3.5">
@@ -135,7 +134,7 @@ export default async function TentangPage() {
             </ol>
           </div>
           <div>
-            <SectionHead eyebrow="Cakupan" title="Yang kami kerjakan dan tidak" />
+            <SectionHead {...sh(copy, 'cakupan', { eyebrow: 'Cakupan', title: 'Yang kami kerjakan dan tidak' })} />
             <h3 className="mt-6 text-base text-forest-700">Kami mengerjakan</h3>
             <CheckList
               items={[

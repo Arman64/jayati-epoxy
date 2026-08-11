@@ -134,7 +134,8 @@ masing-masing sebaiknya punya halaman terpisah.
 **Kini Anda bisa membuatnya sendiri**: buka `/admin/halaman` → **+ Halaman
 baru** → susun seksinya → **Terbitkan**. Contoh yang sudah jadi ada di
 `/epoxy-lantai-gudang`. Setelah halamannya terbit, ubah tautan kartu layanan
-di `/admin/konten` → **Layanan Utama** → kolom **href** agar mengarah ke sana.
+di `/admin/halaman` → tab **Dipakai bersama** → **Layanan Utama** → kolom **href**
+agar mengarah ke sana.
 
 ---
 

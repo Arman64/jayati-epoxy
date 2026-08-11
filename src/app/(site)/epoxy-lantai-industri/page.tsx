@@ -17,6 +17,8 @@ import { projects } from '@/lib/content';
 import { IconArrow, IconWhatsApp } from '@/components/Icons';
 import { waLink } from '@/lib/site';
 import { TrackedLink } from '@/components/TrackedLink';
+import { getPageCopy } from '@/lib/page-copy';
+import { sh } from '@/lib/page-slots';
 
 const PATH = '/epoxy-lantai-industri';
 
@@ -74,6 +76,7 @@ const industryFaqs = [
 
 export default async function IndustriPage() {
   const o = await pageOverride(PATH);
+  const copy = await getPageCopy(PATH);
   const crumbs = [
     { name: 'Beranda', path: '/' },
     { name: 'Epoxy Lantai Industri', path: PATH },
@@ -151,11 +154,7 @@ export default async function IndustriPage() {
       {/* BEBAN */}
       <section className="bg-cream-100 py-14">
         <div className="container-page">
-          <SectionHead
-            eyebrow="Pemilihan Sistem"
-            title="Cocokkan sistem dengan beban dan aktivitas area"
-            lead="Tabel berikut membantu menyempitkan pilihan sebelum survei. Keputusan akhir tetap memerlukan pemeriksaan kondisi lantai di lokasi."
-          />
+          <SectionHead {...sh(copy, 'pemilihan-sistem', { eyebrow: 'Pemilihan Sistem', title: 'Cocokkan sistem dengan beban dan aktivitas area', lead: 'Tabel berikut membantu menyempitkan pilihan sebelum survei. Keputusan akhir tetap memerlukan pemeriksaan kondisi lantai di lokasi.' })} />
           <div className="mt-8 overflow-x-auto rounded-2xl border border-navy-900/10 shadow-card">
             <table className="w-full min-w-[720px] border-collapse bg-white text-left text-sm">
               <caption className="sr-only">Pemilihan sistem epoxy industri berdasarkan beban dan aktivitas area</caption>
@@ -190,7 +189,7 @@ export default async function IndustriPage() {
       <section className="container-page py-14">
         <div className="grid gap-10 lg:grid-cols-2">
           <div>
-            <SectionHead eyebrow="Persiapan Permukaan" title="Tahap yang paling menentukan umur lapisan" />
+            <SectionHead {...sh(copy, 'persiapan-permukaan', { eyebrow: 'Persiapan Permukaan', title: 'Tahap yang paling menentukan umur lapisan' })} />
             <p className="prose-brand mt-4">
               Di area industri, lantai beton biasanya sudah terkontaminasi oli, bahan kimia, atau
               lapisan cat lama. Menutup kontaminan tanpa membukanya lebih dulu akan menghasilkan
@@ -207,7 +206,7 @@ export default async function IndustriPage() {
             />
           </div>
           <div>
-            <SectionHead eyebrow="Downtime" title="Menyusun jadwal tanpa menghentikan produksi" />
+            <SectionHead {...sh(copy, 'downtime', { eyebrow: 'Downtime', title: 'Menyusun jadwal tanpa menghentikan produksi' })} />
             <p className="prose-brand mt-4">
               Sebagian besar klien industri tidak dapat menghentikan operasional sepenuhnya. Karena
               itu perencanaan zona dan jadwal disusun sebelum mobilisasi, bukan saat pekerjaan
@@ -237,7 +236,7 @@ export default async function IndustriPage() {
       <section className="bg-cream-100 py-14">
         <div className="container-page">
           <div className="flex flex-wrap items-end justify-between gap-4">
-            <SectionHead eyebrow="Dokumentasi B2B" title="Contoh proyek industri" />
+            <SectionHead {...sh(copy, 'dokumentasi-b2b', { eyebrow: 'Dokumentasi B2B', title: 'Contoh proyek industri' })} />
             <Link href="/portofolio" className="btn-outline !py-2.5 text-sm">Semua Proyek</Link>
           </div>
           <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -262,11 +261,7 @@ export default async function IndustriPage() {
 
       <section id="form" className="container-page scroll-mt-24 pb-14">
         <div className="grid gap-8 rounded-3xl border border-navy-900/10 bg-cream-50 p-6 shadow-card sm:p-9 lg:grid-cols-[.9fr_1.1fr]">
-          <SectionHead
-            eyebrow="Survei Teknis"
-            title="Ajukan survei untuk area produksi Anda"
-            lead="Sertakan informasi jenis beban, bahan kimia yang digunakan, dan jam operasional agar kami dapat menyiapkan rekomendasi yang tepat."
-          />
+          <SectionHead {...sh(copy, 'survei-teknis', { eyebrow: 'Survei Teknis', title: 'Ajukan survei untuk area produksi Anda', lead: 'Sertakan informasi jenis beban, bahan kimia yang digunakan, dan jam operasional agar kami dapat menyiapkan rekomendasi yang tepat.' })} />
           <QuotationForm source="epoxy-lantai-industri" />
         </div>
       </section>

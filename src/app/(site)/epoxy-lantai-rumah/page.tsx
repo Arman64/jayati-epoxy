@@ -18,6 +18,8 @@ import { getEpoxySystems } from '@/lib/content-db';
 import { IconArrow, IconWhatsApp } from '@/components/Icons';
 import { waLink } from '@/lib/site';
 import { TrackedLink } from '@/components/TrackedLink';
+import { getPageCopy, getPageImages, imageOr } from '@/lib/page-copy';
+import { sh } from '@/lib/page-slots';
 
 const PATH = '/epoxy-lantai-rumah';
 
@@ -96,9 +98,11 @@ function buildHomeFaqs(basePrice: number) {
 }
 
 export default async function RumahPage() {
-  const [o, epoxySystems] = await Promise.all([
+  const [o, epoxySystems, copy, images] = await Promise.all([
     pageOverride(PATH),
     getEpoxySystems(),
+    getPageCopy(PATH),
+    getPageImages(PATH),
   ]);
 
   // Harga contoh di FAQ mengikuti sistem 1.000 micron yang aktif di CMS.
@@ -175,13 +179,13 @@ export default async function RumahPage() {
           </div>
           {/* Foto asli dokumentasi perusahaan, bukan placeholder. */}
           <ProjectPhoto
-            photo={{
+            photo={imageOr(images, 'hero-foto', {
               src: '/img/proyek/dapur-komersial-self-leveling/3.webp',
               width: 1200,
               height: 1600,
               alt: 'Ruangan dengan lantai epoxy self-leveling putih mengilap tanpa sambungan',
               caption: 'Hasil self-leveling: permukaan rata tanpa nat, mudah dibersihkan.',
-            }}
+            })}
             ratio="aspect-[4/3]"
             sizes="(min-width: 1024px) 520px, 100vw"
           />
@@ -190,11 +194,7 @@ export default async function RumahPage() {
 
       <section className="bg-cream-100 py-14">
         <div className="container-page">
-          <SectionHead
-            eyebrow="Area di Rumah"
-            title="Setiap ruangan punya kebutuhan berbeda"
-            lead="Menggunakan satu sistem untuk semua ruangan adalah kesalahan umum. Kamar mandi dan garasi menghadapi tantangan yang tidak sama."
-          />
+          <SectionHead {...sh(copy, 'area-di-rumah', { eyebrow: 'Area di Rumah', title: 'Setiap ruangan punya kebutuhan berbeda', lead: 'Menggunakan satu sistem untuk semua ruangan adalah kesalahan umum. Kamar mandi dan garasi menghadapi tantangan yang tidak sama.' })} />
           <div className="mt-9 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {areas.map((a) => (
               <article key={a.title} className="card">
@@ -212,7 +212,7 @@ export default async function RumahPage() {
       <section className="container-page py-14">
         <div className="grid gap-10 lg:grid-cols-2">
           <div>
-            <SectionHead eyebrow="Keramik" title="Melapisi lantai keramik tanpa dibongkar" />
+            <SectionHead {...sh(copy, 'keramik', { eyebrow: 'Keramik', title: 'Melapisi lantai keramik tanpa dibongkar' })} />
             <p className="prose-brand mt-4">
               Membongkar keramik berarti biaya bongkar, buangan puing, dan waktu tambahan. Pada
               banyak kasus keramik masih dapat dipertahankan sebagai dasar, asalkan memenuhi
@@ -232,7 +232,7 @@ export default async function RumahPage() {
             </Disclaimer>
           </div>
           <div>
-            <SectionHead eyebrow="Perbandingan" title="Epoxy dibanding keramik untuk area rumah" />
+            <SectionHead {...sh(copy, 'perbandingan', { eyebrow: 'Perbandingan', title: 'Epoxy dibanding keramik untuk area rumah' })} />
             <div className="mt-5 overflow-x-auto rounded-2xl border border-navy-900/10 shadow-card">
               <table className="w-full min-w-[420px] border-collapse bg-white text-left text-sm">
                 <caption className="sr-only">Perbandingan lantai epoxy dan keramik untuk rumah</caption>
@@ -269,7 +269,7 @@ export default async function RumahPage() {
 
       <section className="bg-cream-100 py-14">
         <div className="container-page">
-          <SectionHead eyebrow="Estimasi" title="Perkiraan biaya untuk area rumah" center />
+          <SectionHead {...sh(copy, 'estimasi', { eyebrow: 'Estimasi', title: 'Perkiraan biaya untuk area rumah' })} center />
           <div className="mt-8 grid gap-4 sm:grid-cols-3">
             {[
               { label: 'Garasi 1 mobil', area: '± 20 m²', sys: 'Self-Leveling 1.000 micron' },
@@ -308,11 +308,7 @@ export default async function RumahPage() {
 
       <section id="form" className="container-page scroll-mt-24 pb-14">
         <div className="grid gap-8 rounded-3xl border border-navy-900/10 bg-cream-50 p-6 shadow-card sm:p-9 lg:grid-cols-[.9fr_1.1fr]">
-          <SectionHead
-            eyebrow="Konsultasi Rumah"
-            title="Ceritakan area yang ingin dikerjakan"
-            lead="Sertakan foto lantai saat ini agar kami dapat menilai kondisi permukaan dan menyarankan sistem yang sesuai."
-          />
+          <SectionHead {...sh(copy, 'konsultasi-rumah', { eyebrow: 'Konsultasi Rumah', title: 'Ceritakan area yang ingin dikerjakan', lead: 'Sertakan foto lantai saat ini agar kami dapat menilai kondisi permukaan dan menyarankan sistem yang sesuai.' })} />
           <QuotationForm source="epoxy-lantai-rumah" />
         </div>
       </section>

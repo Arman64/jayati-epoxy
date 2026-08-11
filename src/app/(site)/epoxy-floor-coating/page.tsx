@@ -18,6 +18,8 @@ import { getEpoxySystems } from '@/lib/content-db';
 import { IconArrow, IconWhatsApp } from '@/components/Icons';
 import { waLink, site } from '@/lib/site';
 import { TrackedLink } from '@/components/TrackedLink';
+import { getPageCopy, getPageImages, imageOr } from '@/lib/page-copy';
+import { sh } from '@/lib/page-slots';
 
 const PATH = '/epoxy-floor-coating';
 
@@ -56,9 +58,11 @@ const coatingFaqs = [
 ];
 
 export default async function CoatingPage() {
-  const [o, epoxySystems] = await Promise.all([
+  const [o, epoxySystems, copy, images] = await Promise.all([
     pageOverride(PATH),
     getEpoxySystems(),
+    getPageCopy(PATH),
+    getPageImages(PATH),
   ]);
   const crumbs = [
     { name: 'Beranda', path: '/' },
@@ -126,13 +130,13 @@ export default async function CoatingPage() {
           </div>
           {/* Foto asli dokumentasi perusahaan, bukan placeholder. */}
           <ProjectPhoto
-            photo={{
+            photo={imageOr(images, 'hero-foto', {
               src: '/img/proyek/clean-room-cold-storage/3.webp',
               width: 1200,
               height: 1600,
               alt: 'Pekerja meratakan lapisan pelapis lantai di ruang berdinding panel',
               caption: 'Proses aplikasi lapisan oleh tim di lokasi proyek.',
-            }}
+            })}
             ratio="aspect-[4/3]"
             sizes="(min-width: 1024px) 520px, 100vw"
           />
@@ -142,7 +146,7 @@ export default async function CoatingPage() {
       <section className="bg-cream-100 py-14">
         <div className="container-page grid gap-10 lg:grid-cols-2">
           <div>
-            <SectionHead eyebrow="Kapan Tepat" title="Coating cocok untuk area seperti ini" />
+            <SectionHead {...sh(copy, 'kapan-tepat', { eyebrow: 'Kapan Tepat', title: 'Coating cocok untuk area seperti ini' })} />
             <CheckList
               items={[
                 'Gudang dengan lalu lintas hand pallet dan trolley',
@@ -154,7 +158,7 @@ export default async function CoatingPage() {
             />
           </div>
           <div>
-            <SectionHead eyebrow="Kapan Kurang Tepat" title="Sebaiknya naik ke sistem lebih tebal" />
+            <SectionHead {...sh(copy, 'kapan-kurang-tepat', { eyebrow: 'Kapan Kurang Tepat', title: 'Sebaiknya naik ke sistem lebih tebal' })} />
             <CheckList
               items={[
                 'Lalu lintas forklift berat setiap hari',
@@ -173,7 +177,7 @@ export default async function CoatingPage() {
       </section>
 
       <section className="container-page py-14">
-        <SectionHead eyebrow="Harga" title="Rentang biaya epoxy floor coating" />
+        <SectionHead {...sh(copy, 'harga', { eyebrow: 'Harga', title: 'Rentang biaya epoxy floor coating' })} />
         <div className="mt-6 rounded-3xl bg-brand-gradient p-7 text-white sm:p-10">
           <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-leaf-300">Rentang harga</p>
           <p className="mt-2 text-3xl font-extrabold sm:text-4xl">
@@ -197,7 +201,7 @@ export default async function CoatingPage() {
 
       <section id="form" className="container-page scroll-mt-24 pb-14">
         <div className="grid gap-8 rounded-3xl border border-navy-900/10 bg-cream-50 p-6 shadow-card sm:p-9 lg:grid-cols-[.9fr_1.1fr]">
-          <SectionHead eyebrow="Penawaran" title="Kirim detail area yang akan dilapisi" />
+          <SectionHead {...sh(copy, 'penawaran', { eyebrow: 'Penawaran', title: 'Kirim detail area yang akan dilapisi' })} />
           <QuotationForm source="epoxy-floor-coating" />
         </div>
       </section>

@@ -6,6 +6,8 @@ import { Breadcrumbs, CtaBand, Disclaimer, ProjectPhoto, SectionHead } from '@/c
 import { clientCount, clientGroups, projects } from '@/lib/content';
 import { IconArrow, IconCheck } from '@/components/Icons';
 import { site } from '@/lib/site';
+import { getPageCopy } from '@/lib/page-copy';
+import { sh } from '@/lib/page-slots';
 
 const PATH = '/portofolio';
 
@@ -26,6 +28,7 @@ export async function generateMetadata() {
 
 export default async function PortofolioPage() {
   const o = await pageOverride(PATH);
+  const copy = await getPageCopy(PATH);
   const crumbs = [
     { name: 'Beranda', path: '/' },
     { name: 'Portofolio', path: PATH },
@@ -100,12 +103,7 @@ export default async function PortofolioPage() {
       {/* ------------------------------------------------------ DAFTAR KLIEN */}
       <section className="bg-cream-100 py-14 sm:py-16">
         <div className="container-page">
-          <SectionHead
-            eyebrow="Daftar Klien"
-            title={`${clientCount} unit telah kami kerjakan`}
-            lead="Daftar berikut disalin dari company profile resmi perusahaan, bagian “Our Projects — Cat Epoxy Lantai 2026”."
-            as="h2"
-          />
+          <SectionHead {...sh(copy, 'daftar-klien', { eyebrow: 'Daftar Klien', title: `${clientCount} unit telah kami kerjakan`, lead: 'Daftar berikut disalin dari company profile resmi perusahaan, bagian “Our Projects — Cat Epoxy Lantai 2026”.' })} as="h2" />
           <div className="mt-8 space-y-6">
             {clientGroups.map((g) => (
               <div key={g.category} className="rounded-3xl border border-navy-900/10 bg-white p-6 sm:p-7">

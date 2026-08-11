@@ -16,6 +16,8 @@ import { PriceCalculator } from '@/components/PriceCalculator';
 import { QuotationForm } from '@/components/QuotationForm';
 import { site } from '@/lib/site';
 import { IconArrow } from '@/components/Icons';
+import { getPageCopy } from '@/lib/page-copy';
+import { sh } from '@/lib/page-slots';
 
 const PATH = '/harga-epoxy-lantai';
 
@@ -44,10 +46,11 @@ const priceFactors = [
 ];
 
 export default async function HargaPage() {
-  const [o, epoxySystems, priceFaqs] = await Promise.all([
+  const [o, epoxySystems, priceFaqs, copy] = await Promise.all([
     pageOverride(PATH),
     getEpoxySystems(),
     getPriceFaqs(),
+    getPageCopy(PATH),
   ]);
 
   // Rentang harga dihitung dari pricelist yang sedang aktif di CMS,
@@ -102,12 +105,7 @@ export default async function HargaPage() {
 
       {/* TABEL HARGA */}
       <section className="container-page pb-14">
-        <SectionHead
-          eyebrow="Pricelist Resmi"
-          title="Harga epoxy lantai per m² menurut ketebalan"
-          lead="Tiga kolom harga di bawah mengikuti luas area yang dikerjakan dalam satu proyek."
-          as="h2"
-        />
+        <SectionHead {...sh(copy, 'pricelist-resmi', { eyebrow: 'Pricelist Resmi', title: 'Harga epoxy lantai per m² menurut ketebalan', lead: 'Tiga kolom harga di bawah mengikuti luas area yang dikerjakan dalam satu proyek.' })} as="h2" />
         <div className="mt-7 overflow-x-auto rounded-2xl border border-navy-900/10 shadow-card">
           <table className="w-full min-w-[820px] border-collapse bg-white text-left text-sm">
             <caption className="sr-only">
@@ -188,11 +186,7 @@ export default async function HargaPage() {
       <section className="bg-cream-100 py-14">
         <div className="container-page grid gap-8 lg:grid-cols-[1.05fr_.95fr] lg:items-start">
           <div>
-            <SectionHead
-              eyebrow="Hitung Sendiri"
-              title="Perkirakan anggaran sebelum survei"
-              lead="Masukkan luas area dan pilih ketebalan yang sesuai. Kalkulator memakai angka pricelist resmi di atas, termasuk penyesuaian tier luas area."
-            />
+            <SectionHead {...sh(copy, 'hitung-sendiri', { eyebrow: 'Hitung Sendiri', title: 'Perkirakan anggaran sebelum survei', lead: 'Masukkan luas area dan pilih ketebalan yang sesuai. Kalkulator memakai angka pricelist resmi di atas, termasuk penyesuaian tier luas area.' })} />
             <div className="mt-6 rounded-2xl border border-navy-900/10 bg-white p-5">
               <h3 className="text-base">Contoh perhitungan</h3>
               <p className="prose-brand mt-2 text-[14px]">
@@ -215,7 +209,7 @@ export default async function HargaPage() {
 
       {/* FAKTOR HARGA */}
       <section className="container-page py-14">
-        <SectionHead eyebrow="Faktor Harga" title="Enam hal yang mengubah angka penawaran" />
+        <SectionHead {...sh(copy, 'faktor-harga', { eyebrow: 'Faktor Harga', title: 'Enam hal yang mengubah angka penawaran' })} />
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {priceFactors.map((f, i) => (
             <article key={f.title} className="card">
@@ -248,11 +242,7 @@ export default async function HargaPage() {
 
       <section id="form" className="container-page scroll-mt-24 pb-14">
         <div className="grid gap-8 rounded-3xl border border-navy-900/10 bg-cream-50 p-6 shadow-card sm:p-9 lg:grid-cols-[.9fr_1.1fr]">
-          <SectionHead
-            eyebrow="Estimasi dari Foto"
-            title="Kirim foto lantai, terima estimasi awal"
-            lead="Foto membantu kami menilai kondisi permukaan sehingga estimasi lebih mendekati angka final."
-          />
+          <SectionHead {...sh(copy, 'estimasi-dari-foto', { eyebrow: 'Estimasi dari Foto', title: 'Kirim foto lantai, terima estimasi awal', lead: 'Foto membantu kami menilai kondisi permukaan sehingga estimasi lebih mendekati angka final.' })} />
           <QuotationForm source="harga-epoxy-lantai" />
         </div>
       </section>
