@@ -1,0 +1,125 @@
+import { NextResponse } from 'next/server';
+import { createLead } from '@/lib/leads';
+
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
+/** Rate limit sederhana in-memory. Produksi: pindah ke Redis/Upstash — PRD §7 */
+const hits = new Map<string, { count: number; resetAt: number }>();
+const WINDOW_MS = 10 * 60 * 1000;
+const MAX_PER_WINDOW = 5;
+
+function rateLimited(ip: string): boolean {
+  const now = Date.now();
+  const entry = hits.get(ip);
+  if (!entry || now > entry.resetAt) {
+    hits.set(ip, { count: 1, resetAt: now + WINDOW_MS });
+    return false;
+  }
+  entry.count += 1;
+  return entry.count > MAX_PER_WINDOW;
+}
+
+const ALLOWED_MIME = ['image/jpeg', 'image/png', 'image/webp'];
+const MAX_FILE_BYTES = 5 * 1024 * 1024;
+
+function clean(v: FormDataEntryValue | null, max = 500): string {
+  return typeof v === 'string' ? v.trim().slice(0, max) : '';
+}
+
+export async function POST(request: Request) {
+  const ip =
+    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+    request.headers.get('x-real-ip') ??
+    'unknown';
+
+  if (rateLimited(ip)) {
+    return NextResponse.json(
+      { ok: false, error: 'Terlalu banyak permintaan. Coba lagi beberapa saat lagi.' },
+      { status: 429 },
+    );
+  }
+
+  let form: FormData;
+  try {
+    form = await request.formData();
+  } catch {
+    return NextResponse.json({ ok: false, error: 'Format permintaan tidak valid.' }, { status: 400 });
+  }
+
+  // Honeypot: bot mengisi field tersembunyi → respons sukses palsu agar bot tidak retry.
+  if (clean(form.get('company_website'))) {
+    return NextResponse.json({ ok: true, id: 'ok' }, { status: 200 });
+  }
+
+  const name = clean(form.get('name'), 120);
+  const phone = clean(form.get('phone'), 25);
+  const city = clean(form.get('city'), 120);
+  const buildingType = clean(form.get('buildingType'), 80);
+  const areaSqmRaw = clean(form.get('areaSqm'), 12);
+  const floorCondition = clean(form.get('floorCondition'), 80);
+  const needType = clean(form.get('needType'), 80);
+  const message = clean(form.get('message'), 2000);
+  const source = clean(form.get('source'), 60) || 'website';
+
+  const fields: Record<string, string> = {};
+  if (name.length < 2) fields.name = 'Nama minimal 2 karakter.';
+  if (!/^[0-9+\-\s()]{8,20}$/.test(phone)) fields.phone = 'Nomor WhatsApp tidak valid.';
+  if (city.length < 2) fields.city = 'Kota wajib diisi.';
+
+  const areaSqm = areaSqmRaw ? Number(areaSqmRaw) : null;
+  if (areaSqm !== null && (!Number.isFinite(areaSqm) || areaSqm <= 0 || areaSqm > 1_000_000)) {
+    fields.areaSqm = 'Luas area tidak valid.';
+  }
+
+  // Validasi file: MIME, ukuran, ekstensi — PRD §15
+  const photo = form.get('photo');
+  let photoMeta: { name: string; size: number; type: string } | null = null;
+  if (photo instanceof File && photo.size > 0) {
+    const ext = photo.name.split('.').pop()?.toLowerCase() ?? '';
+    if (!ALLOWED_MIME.includes(photo.type) || !['jpg', 'jpeg', 'png', 'webp'].includes(ext)) {
+      fields.photo = 'Format file harus JPG, PNG, atau WebP.';
+    } else if (photo.size > MAX_FILE_BYTES) {
+      fields.photo = 'Ukuran file maksimal 5 MB.';
+    } else {
+      photoMeta = { name: photo.name.slice(0, 180), size: photo.size, type: photo.type };
+    }
+  }
+
+  if (Object.keys(fields).length > 0) {
+    return NextResponse.json(
+      { ok: false, error: 'Data belum lengkap atau tidak valid.', fields },
+      { status: 422 },
+    );
+  }
+
+  const lead = await createLead({
+    name,
+    phone,
+    city,
+    buildingType,
+    areaSqm,
+    floorCondition,
+    needType,
+    message,
+    source,
+    photo: photoMeta,
+    ip,
+    userAgent: request.headers.get('user-agent')?.slice(0, 300) ?? '',
+  });
+
+  // Auto-reply sopan tanpa menjanjikan harga final — PRD §7
+  return NextResponse.json(
+    {
+      ok: true,
+      id: lead.id,
+      autoReply:
+        'Terima kasih. Permintaan Anda tercatat dan akan ditindaklanjuti pada jam kerja. Estimasi final diberikan setelah kondisi lantai diperiksa.',
+    },
+    { status: 201 },
+  );
+}
+
+export async function GET() {
+  return NextResponse.json({ ok: false, error: 'Method not allowed' }, { status: 405 });
+}

@@ -1,0 +1,14 @@
+{
+  "name": "Jayati Epoxy — Jasa Epoxy Lantai",
+  "short_name": "Jayati Epoxy",
+  "description": "Kontraktor dan aplikator epoxy lantai untuk rumah, gudang, dan pabrik.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F1F1EB",
+  "theme_color": "#011E46",
+  "lang": "id",
+  "icons": [
+    { "src": "/img/logo-180.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "/img/logo-jayati.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
