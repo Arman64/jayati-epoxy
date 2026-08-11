@@ -8,15 +8,26 @@
     "start": "next start -H 0.0.0.0 -p 3000",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "audit": "node audit.mjs"
+    "audit": "node audit.mjs",
+    "db:migrate": "node scripts/db.mjs migrate",
+    "db:seed": "node scripts/db.mjs seed",
+    "db:import": "node scripts/db.mjs import-jsonl",
+    "db:status": "node scripts/db.mjs status",
+    "db:purge-test": "node scripts/db.mjs purge-test"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "jose": "^6.2.8",
     "next": "^14.2.35",
+    "pg": "^8.23.0",
     "react": "18.3.1",
-    "react-dom": "18.3.1"
+    "react-dom": "18.3.1",
+    "server-only": "^0.0.1"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "20.14.10",
+    "@types/pg": "^8.21.0",
     "@types/react": "18.3.3",
     "@types/react-dom": "18.3.0",
     "autoprefixer": "10.4.19",

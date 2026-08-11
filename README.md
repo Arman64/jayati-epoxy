@@ -150,8 +150,27 @@ CLS **0**, error konsol **0**.
 
 ---
 
+## Panel Admin & CRM (Phase 3)
+
+Sudah dibangun. Lihat **ADMIN.md** untuk akun, peran, dan perintah database.
+
+- `/admin` — dasbor: prospek hari ini / 7 hari / 30 hari, follow-up terlewat,
+  sebaran status, nilai proyek dimenangkan
+- `/admin/leads` — daftar prospek: filter status, cari nama/telepon/kota,
+  filter petugas, paginasi, ekspor CSV
+- `/admin/leads/[id]` — detail: ubah status, tugaskan petugas, estimasi nilai,
+  jadwal follow-up, catatan, riwayat perubahan
+- `/admin/pengguna` — kelola akun (khusus pemilik)
+
+Data disimpan di **PostgreSQL** (5 tabel, skema di `db/schema.sql`). Form publik
+menulis langsung ke database; bila database bermasalah API menjawab 503 dan
+mengarahkan pengunjung ke WhatsApp.
+
+Uji otomatis: `node ../admincheck.mjs` — **64 pengecekan** meliputi proteksi
+tanpa login, cookie palsu, pembatasan peran, validasi input, percobaan SQL
+injection, dan ekspor CSV.
+
 ## Belum Termasuk (fase berikutnya)
 
-Phase 3 (CMS/CRM admin, RBAC, approval, audit log) dan Phase 5 (MCP content
-workflow) belum dibangun. `src/lib/leads.ts` sengaja diisolasi sebagai satu titik
-ganti menuju PostgreSQL + Prisma/Drizzle.
+Phase 5 (MCP content workflow) belum dibangun. Notifikasi email/WhatsApp saat
+lead masuk juga belum ada — saat ini lead hanya tersimpan di database.

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createLead } from '@/lib/leads';
+import { saveLead } from '@/lib/leads';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -93,20 +93,34 @@ export async function POST(request: Request) {
     );
   }
 
-  const lead = await createLead({
-    name,
-    phone,
-    city,
-    buildingType,
-    areaSqm,
-    floorCondition,
-    needType,
-    message,
-    source,
-    photo: photoMeta,
-    ip,
-    userAgent: request.headers.get('user-agent')?.slice(0, 300) ?? '',
-  });
+  let lead: { id: string };
+  try {
+    lead = await saveLead({
+      name,
+      phone,
+      city,
+      buildingType,
+      areaSqm,
+      floorCondition,
+      needType,
+      message,
+      source,
+      photoPath: photoMeta ? photoMeta.name : null,
+      ip,
+      userAgent: request.headers.get('user-agent')?.slice(0, 300) ?? '',
+    });
+  } catch (err) {
+    // Jangan pernah menelan lead tanpa jejak: catat di log server.
+    console.error('[leads] gagal menyimpan ke database:', err);
+    return NextResponse.json(
+      {
+        ok: false,
+        error:
+          'Sistem sedang bermasalah menyimpan data Anda. Silakan hubungi kami langsung via WhatsApp.',
+      },
+      { status: 503 },
+    );
+  }
 
   // Auto-reply sopan tanpa menjanjikan harga final — PRD §7
   return NextResponse.json(
