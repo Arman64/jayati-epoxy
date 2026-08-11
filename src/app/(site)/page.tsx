@@ -13,17 +13,21 @@ import {
   SectionHead,
 } from '@/components/Sections';
 import {
-  coreServices,
-  epoxySystems,
-  generalFaqs,
+  generalFaqs as fallbackFaqs,
   formatRupiah,
   projects,
-  workSteps,
-  whyChooseUs,
   clientCount,
   priceRange,
-  cities,
 } from '@/lib/content';
+import {
+  getCities,
+  getCoreServices,
+  getEpoxySystems,
+  getGeneralFaqs,
+  getStats,
+  getWhyChooseUs,
+  getWorkSteps,
+} from '@/lib/content-db';
 import { iconMap, IconArrow, IconCheck, IconWhatsApp, IconMapPin } from '@/components/Icons';
 import { defaultWaMessage, site, waLink } from '@/lib/site';
 import { TrackedLink } from '@/components/TrackedLink';
@@ -45,16 +49,28 @@ export async function generateMetadata() {
   });
 }
 
-/** Angka & klaim bersumber dari company profile resmi (hal. 4, 6, 12). */
-const trustPoints = [
-  { label: 'Proyek Tercatat', value: `${clientCount}+ Unit`, note: 'Daftar klien company profile 2026' },
-  { label: 'Standar Material', value: 'ISO 9001', note: 'Material produksi standar mutu' },
-  { label: 'Spesifikasi', value: 'SNI', note: 'Warna, ketebalan & model sesuai pesanan' },
-  { label: 'Layanan', value: 'Bergaransi', note: 'Garansi resmi tertulis' },
+/** Dipakai bila koleksi "Angka Sorotan" dikosongkan di CMS. */
+const fallbackTrustPoints = [
+  { eyebrow: 'Proyek Tercatat', value: `${clientCount}+ Unit`, note: 'Daftar klien company profile 2026' },
+  { eyebrow: 'Standar Material', value: 'ISO 9001', note: 'Material produksi standar mutu' },
+  { eyebrow: 'Spesifikasi', value: 'SNI', note: 'Warna, ketebalan & model sesuai pesanan' },
+  { eyebrow: 'Layanan', value: 'Bergaransi', note: 'Garansi resmi tertulis' },
 ];
 
 export default async function HomePage() {
-  const o = await pageOverride(PATH);
+  const [o, coreServices, epoxySystems, workSteps, whyChooseUs, generalFaqs, cities, stats] =
+    await Promise.all([
+      pageOverride(PATH),
+      getCoreServices(),
+      getEpoxySystems(),
+      getWorkSteps(),
+      getWhyChooseUs(),
+      getGeneralFaqs(),
+      getCities(),
+      getStats(),
+    ]);
+
+  const trustPoints = stats.length ? stats : fallbackTrustPoints;
   const breadcrumb = breadcrumbSchema([{ name: 'Beranda', path: '/' }]);
   const heroProject = projects[0]!;
   const heroPhoto = heroProject.photos[0]!;
@@ -156,8 +172,8 @@ export default async function HomePage() {
         <div className="relative border-t border-white/10 bg-navy-950/40">
           <div className="container-page grid grid-cols-2 gap-px lg:grid-cols-4">
             {trustPoints.map((t) => (
-              <div key={t.label} className="px-2 py-5 text-center sm:px-4">
-                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-leaf-400">{t.label}</p>
+              <div key={t.eyebrow} className="px-2 py-5 text-center sm:px-4">
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-leaf-400">{t.eyebrow}</p>
                 <p className="mt-1.5 text-base font-extrabold text-white sm:text-lg">{t.value}</p>
                 <p className="mt-1 text-[11px] leading-snug text-white/55">{t.note}</p>
               </div>
@@ -223,12 +239,8 @@ export default async function HomePage() {
           />
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {coreServices.map((s) => {
-              const Icon = iconMap[s.icon];
-              const href = ['epoxy-lantai-rumah', 'epoxy-lantai-industri', 'epoxy-floor-coating'].includes(
-                s.slug,
-              )
-                ? `/${s.slug}`
-                : '/jasa-epoxy-lantai';
+              const Icon = iconMap[s.icon as keyof typeof iconMap] ?? iconMap.layers;
+              const href = s.href || '/jasa-epoxy-lantai';
               return (
                 <Link key={s.slug} href={href} className="card group hover:shadow-lift">
                   <span className="grid h-12 w-12 place-items-center rounded-xl bg-leaf-gradient text-white">

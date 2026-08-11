@@ -14,7 +14,8 @@ import {
 } from '@/components/Sections';
 import { QuotationForm } from '@/components/QuotationForm';
 import { cityContents, getCityContent } from '@/lib/cityContent';
-import { epoxySystems, formatRupiah, priceRange, projects } from '@/lib/content';
+import { formatRupiah, priceRange, projects } from '@/lib/content';
+import { getEpoxySystems } from '@/lib/content-db';
 import { IconArrow, IconMapPin, IconWhatsApp } from '@/components/Icons';
 import { site, waLink } from '@/lib/site';
 import { TrackedLink } from '@/components/TrackedLink';
@@ -42,9 +43,11 @@ export function generateMetadata({ params }: Props) {
   });
 }
 
-export default function CityPage({ params }: Props) {
+export default async function CityPage({ params }: Props) {
   const city = getCityContent(params.kota);
   if (!city) notFound();
+
+  const epoxySystems = await getEpoxySystems();
 
   // Foto dipilih deterministik per kota agar tiap halaman berbeda — PRD §5.6.
   const cityIndex = cityContents.findIndex((c) => c.slug === city.slug);

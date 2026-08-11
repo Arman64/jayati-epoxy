@@ -1,7 +1,9 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { curvingPrice, epoxySystems, formatRupiah, priceForArea } from '@/lib/content';
+import { curvingPrice as fallbackCurving, epoxySystems as fallbackSystems, formatRupiah, priceForArea, type EpoxySystem } from '@/lib/content';
+
+type CurvingPrice = { label: string; unit: string; under100: number; over100: number; over500: number; unverified: boolean };
 import { track } from '@/lib/analytics';
 import { IconInfo } from './Icons';
 import { defaultWaMessage, site, waLink } from '@/lib/site';
@@ -14,7 +16,17 @@ import { defaultWaMessage, site, waLink } from '@/lib/site';
  * Tidak ada faktor pengali karangan. Angka yang tampil dapat ditelusuri
  * langsung ke dokumen resmi perusahaan.
  */
-export function PriceCalculator() {
+export function PriceCalculator({
+  systems,
+  curvingPrice: curvingProp,
+}: {
+  /** Pricelist dari CMS. Bila kosong, memakai daftar bawaan. */
+  systems?: EpoxySystem[];
+  curvingPrice?: CurvingPrice;
+} = {}) {
+  const epoxySystems = systems?.length ? systems : fallbackSystems;
+  const curvingPrice = curvingProp ?? fallbackCurving;
+
   const [area, setArea] = useState<string>('100');
   const [curving, setCurving] = useState<string>('0');
   const [systemSlug, setSystemSlug] = useState(epoxySystems[0]!.slug);
@@ -23,7 +35,9 @@ export function PriceCalculator() {
   const result = useMemo(() => {
     const sqm = Number(area);
     const lm = Number(curving) || 0;
-    const system = epoxySystems.find((s) => s.slug === systemSlug);
+    // Bila sistem yang dipilih dihapus dari CMS, jatuh ke sistem pertama
+    // supaya kalkulator tidak mendadak kosong bagi pengunjung.
+    const system = epoxySystems.find((s) => s.slug === systemSlug) ?? epoxySystems[0];
 
     if (!system || !Number.isFinite(sqm) || sqm <= 0 || lm < 0) return null;
 
@@ -45,7 +59,7 @@ export function PriceCalculator() {
       hasCurving: lm > 0,
       lm,
     };
-  }, [area, curving, systemSlug]);
+  }, [area, curving, systemSlug, epoxySystems, curvingPrice]);
 
   const onChange = () => {
     if (!touched) {

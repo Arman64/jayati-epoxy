@@ -4,7 +4,8 @@ import { LpHero, LpPortfolio, LpStickyCta, LpSteps, LpTrustBar } from '@/compone
 import { FaqList, Disclaimer, SectionHead } from '@/components/Sections';
 import { QuotationForm } from '@/components/QuotationForm';
 import { PriceCalculator } from '@/components/PriceCalculator';
-import { epoxySystems, formatRupiah, priceFaqs, projects, priceRange, priceFloor, priceCeiling } from '@/lib/content';
+import { curvingPrice, formatRupiah, projects, priceRange } from '@/lib/content';
+import { getEpoxySystems, getPriceFaqs } from '@/lib/content-db';
 import { site } from '@/lib/site';
 
 const PATH = '/lp/harga-epoxy-lantai';
@@ -28,7 +29,10 @@ const priceFactors = [
   { title: 'Perbaikan tambahan', body: 'Leveling, coving, dan marka dihitung sebagai item terpisah.' },
 ];
 
-export default function LpHarga() {
+export default async function LpHarga() {
+  const [epoxySystems, priceFaqs] = await Promise.all([getEpoxySystems(), getPriceFaqs()]);
+  const priceFloor = Math.min(...epoxySystems.map((x) => x.priceOver500));
+  const priceCeiling = Math.max(...epoxySystems.map((x) => x.priceUnder100));
   return (
     <>
       <JsonLd
@@ -121,7 +125,7 @@ export default function LpHarga() {
               ))}
             </div>
           </div>
-          <PriceCalculator />
+          <PriceCalculator systems={epoxySystems} curvingPrice={curvingPrice} />
         </div>
       </section>
 

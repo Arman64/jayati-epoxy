@@ -5,7 +5,8 @@ import { pageOverride } from '@/lib/pages';
 import { JsonLd } from '@/components/JsonLd';
 import { AnswerBox, Breadcrumbs, CheckList, CtaBand, Disclaimer, SectionHead } from '@/components/Sections';
 import { site } from '@/lib/site';
-import { workSteps, companyValues, missionStatements, visionStatement, clientCount } from '@/lib/content';
+import { companyValues, missionStatements, visionStatement, clientCount } from '@/lib/content';
+import { getWorkSteps } from '@/lib/content-db';
 
 const PATH = '/tentang-kami';
 
@@ -44,7 +45,10 @@ const principles = [
 ];
 
 export default async function TentangPage() {
-  const o = await pageOverride(PATH);
+  const [o, workSteps] = await Promise.all([
+    pageOverride(PATH),
+    getWorkSteps(),
+  ]);
   const crumbs = [
     { name: 'Beranda', path: '/' },
     { name: 'Tentang Kami', path: PATH },

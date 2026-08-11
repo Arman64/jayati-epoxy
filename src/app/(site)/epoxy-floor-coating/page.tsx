@@ -13,7 +13,8 @@ import {
   SectionHead,
 } from '@/components/Sections';
 import { QuotationForm } from '@/components/QuotationForm';
-import { epoxySystems, formatRupiah, priceRange } from '@/lib/content';
+import { formatRupiah, priceRange } from '@/lib/content';
+import { getEpoxySystems } from '@/lib/content-db';
 import { IconArrow, IconWhatsApp } from '@/components/Icons';
 import { waLink, site } from '@/lib/site';
 import { TrackedLink } from '@/components/TrackedLink';
@@ -55,7 +56,10 @@ const coatingFaqs = [
 ];
 
 export default async function CoatingPage() {
-  const o = await pageOverride(PATH);
+  const [o, epoxySystems] = await Promise.all([
+    pageOverride(PATH),
+    getEpoxySystems(),
+  ]);
   const crumbs = [
     { name: 'Beranda', path: '/' },
     { name: 'Epoxy Floor Coating', path: PATH },

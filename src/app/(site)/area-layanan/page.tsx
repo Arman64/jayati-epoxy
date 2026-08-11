@@ -3,7 +3,7 @@ import { buildMetadata, breadcrumbSchema } from '@/lib/seo';
 import { pageOverride } from '@/lib/pages';
 import { JsonLd } from '@/components/JsonLd';
 import { AnswerBox, Breadcrumbs, CtaBand, Disclaimer, SectionHead } from '@/components/Sections';
-import { cities } from '@/lib/content';
+import { getCities } from '@/lib/content-db';
 import { IconArrow, IconMapPin } from '@/components/Icons';
 import { site } from '@/lib/site';
 
@@ -25,7 +25,10 @@ export async function generateMetadata() {
 }
 
 export default async function AreaLayananPage() {
-  const o = await pageOverride(PATH);
+  const [o, cities] = await Promise.all([
+    pageOverride(PATH),
+    getCities(),
+  ]);
   const crumbs = [
     { name: 'Beranda', path: '/' },
     { name: 'Area Layanan', path: PATH },

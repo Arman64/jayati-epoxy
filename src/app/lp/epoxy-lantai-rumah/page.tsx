@@ -3,7 +3,8 @@ import { JsonLd } from '@/components/JsonLd';
 import { LpHero, LpPortfolio, LpProblems, LpStickyCta, LpSteps, LpTrustBar } from '@/components/LpBlocks';
 import { FaqList, Disclaimer, SectionHead } from '@/components/Sections';
 import { QuotationForm } from '@/components/QuotationForm';
-import { epoxySystems, formatRupiah, projects, priceForArea, priceRange } from '@/lib/content';
+import { formatRupiah, projects, priceForArea, priceRange } from '@/lib/content';
+import { getEpoxySystems } from '@/lib/content-db';
 
 const PATH = '/lp/epoxy-lantai-rumah';
 const CLUSTER = 'rumah';
@@ -40,7 +41,8 @@ const faqs = [
   },
 ];
 
-export default function LpRumah() {
+export default async function LpRumah() {
+  const epoxySystems = await getEpoxySystems();
   const coating = epoxySystems[0]!;
 
   return (

@@ -3,7 +3,8 @@ import { JsonLd } from '@/components/JsonLd';
 import { LpHero, LpPortfolio, LpProblems, LpStickyCta, LpSteps, LpTrustBar } from '@/components/LpBlocks';
 import { FaqList, Disclaimer, SectionHead } from '@/components/Sections';
 import { QuotationForm } from '@/components/QuotationForm';
-import { epoxySystems, formatRupiah, generalFaqs, projects, cities, priceRange } from '@/lib/content';
+import { formatRupiah, projects, priceRange } from '@/lib/content';
+import { getCities, getEpoxySystems, getGeneralFaqs } from '@/lib/content-db';
 import { site } from '@/lib/site';
 
 const PATH = '/lp/jasa-epoxy-lantai';
@@ -19,7 +20,7 @@ export const metadata = buildMetadata({
   noindex: true,
 });
 
-const faqs = [
+const pageSpecificFaqs = [
   {
     q: 'Apakah survei dikenakan biaya?',
     a: 'Untuk lokasi dalam jangkauan tim, survei awal tidak dikenakan biaya. Untuk lokasi di luar jangkauan, biaya kunjungan dikonfirmasi terlebih dahulu dan dapat diperhitungkan bila pekerjaan berlanjut.',
@@ -28,10 +29,17 @@ const faqs = [
     q: 'Berapa lama penawaran diterbitkan setelah survei?',
     a: 'Umumnya penawaran tertulis dikirim dalam 1–3 hari kerja setelah survei, tergantung kompleksitas area dan kebutuhan pengecekan datasheet material.',
   },
-  ...generalFaqs.slice(0, 4),
 ];
 
-export default function LpJasa() {
+export default async function LpJasa() {
+  const [epoxySystems, generalFaqs, cities] = await Promise.all([
+    getEpoxySystems(),
+    getGeneralFaqs(),
+    getCities(),
+  ]);
+
+  // FAQ khusus landing page digabung dengan FAQ umum dari CMS.
+  const faqs = [...pageSpecificFaqs, ...generalFaqs.slice(0, 4)];
   return (
     <>
       <JsonLd

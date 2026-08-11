@@ -1,10 +1,11 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { site } from '@/lib/site';
-import { coreServices, cities } from '@/lib/content';
+import { getCities, getCoreServices } from '@/lib/content-db';
 import { IconMail, IconMapPin, IconPhone, IconClock } from './Icons';
 
-export function Footer() {
+export async function Footer() {
+  const [coreServices, cities] = await Promise.all([getCoreServices(), getCities()]);
   const year = new Date().getFullYear();
 
   return (
@@ -40,7 +41,7 @@ export function Footer() {
           <ul className="mt-4 space-y-2.5 text-sm">
             {coreServices.slice(0, 4).map((s) => (
               <li key={s.slug}>
-                <Link className="hover:text-leaf-300" href={`/${s.slug}`}>
+                <Link className="hover:text-leaf-300" href={s.href || `/${s.slug}`}>
                   {s.title}
                 </Link>
               </li>

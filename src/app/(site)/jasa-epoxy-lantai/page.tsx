@@ -12,7 +12,8 @@ import {
   ProjectPhoto,
   SectionHead,
 } from '@/components/Sections';
-import { epoxySystems, generalFaqs, formatRupiah, projects, workSteps, cities, priceRange } from '@/lib/content';
+import { formatRupiah, projects, priceRange } from '@/lib/content';
+import { getCities, getEpoxySystems, getGeneralFaqs, getWorkSteps } from '@/lib/content-db';
 import { IconArrow, IconClock, IconMapPin, IconWhatsApp } from '@/components/Icons';
 import { defaultWaMessage, site, waLink } from '@/lib/site';
 import { TrackedLink } from '@/components/TrackedLink';
@@ -35,7 +36,7 @@ export async function generateMetadata() {
   });
 }
 
-const serviceFaqs = [
+const pageSpecificFaqs = [
   {
     q: 'Apa bedanya kontraktor, aplikator, dan penjual material epoxy?',
     a: 'Kontraktor epoxy mengelola keseluruhan pekerjaan termasuk perencanaan sistem, tenaga kerja, dan jadwal. Aplikator adalah pelaksana teknis di lapangan. Penjual material hanya menyediakan resin tanpa tanggung jawab hasil akhir. Jayati Epoxy bekerja sebagai kontraktor sekaligus aplikator sehingga tanggung jawab hasil tidak terpecah.',
@@ -48,11 +49,19 @@ const serviceFaqs = [
     q: 'Bagaimana cara memastikan ketebalan sesuai yang dijanjikan?',
     a: 'Ketebalan dikontrol melalui konsumsi material per meter persegi yang dicatat selama aplikasi, serta pengukuran ketebalan basah saat pengerjaan. Angka konsumsi ini dapat dilampirkan pada laporan pekerjaan bila diminta.',
   },
-  ...generalFaqs.slice(0, 4),
 ];
 
 export default async function JasaEpoxyPage() {
-  const o = await pageOverride(PATH);
+  const [o, epoxySystems, generalFaqs, workSteps, cities] = await Promise.all([
+    pageOverride(PATH),
+    getEpoxySystems(),
+    getGeneralFaqs(),
+    getWorkSteps(),
+    getCities(),
+  ]);
+
+  // FAQ khusus halaman ini digabung dengan FAQ umum yang dikelola dari CMS.
+  const serviceFaqs = [...pageSpecificFaqs, ...generalFaqs.slice(0, 4)];
   const crumbs = [
     { name: 'Beranda', path: '/' },
     { name: 'Jasa Epoxy Lantai', path: PATH },

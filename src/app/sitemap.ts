@@ -4,6 +4,7 @@ import { projects } from '@/lib/content';
 import { getPublishedPosts } from '@/lib/posts';
 import { getPageMap } from '@/lib/pages';
 import { cityContents } from '@/lib/cityContent';
+import { publishedCustomPages } from '@/lib/page-sections';
 
 /**
  * Sitemap hanya berisi URL canonical, status 200, dan indexable — PRD §12.
@@ -63,6 +64,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Hormati pengaturan CMS: halaman yang di-noindex atau dikeluarkan dari
   // sitemap oleh Owner tidak boleh ikut terdaftar.
+  // Halaman buatan Owner yang sudah terbit ikut masuk sitemap.
+  const custom = await publishedCustomPages();
+  for (const c of custom) {
+    if (!c.inSitemap || c.noindex) continue;
+    entries.push({
+      url: `${site.url}${c.path}`,
+      lastModified: new Date(c.updatedAt),
+      changeFrequency: 'monthly' as const,
+      priority: c.sitemapPriority,
+    });
+  }
+
   const overrides = await getPageMap();
   return entries.filter((e) => {
     const path = e.url.replace(site.url, '') || '/';

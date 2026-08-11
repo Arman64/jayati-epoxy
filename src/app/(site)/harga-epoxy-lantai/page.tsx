@@ -10,7 +10,8 @@ import {
   FaqList,
   SectionHead,
 } from '@/components/Sections';
-import { epoxySystems, priceFaqs, formatRupiah, curvingPrice, priceFloor, priceCeiling } from '@/lib/content';
+import { formatRupiah, curvingPrice } from '@/lib/content';
+import { getEpoxySystems, getPriceFaqs } from '@/lib/content-db';
 import { PriceCalculator } from '@/components/PriceCalculator';
 import { QuotationForm } from '@/components/QuotationForm';
 import { site } from '@/lib/site';
@@ -43,7 +44,16 @@ const priceFactors = [
 ];
 
 export default async function HargaPage() {
-  const o = await pageOverride(PATH);
+  const [o, epoxySystems, priceFaqs] = await Promise.all([
+    pageOverride(PATH),
+    getEpoxySystems(),
+    getPriceFaqs(),
+  ]);
+
+  // Rentang harga dihitung dari pricelist yang sedang aktif di CMS,
+  // bukan dari konstanta, supaya kalimat pembuka ikut berubah.
+  const priceFloor = Math.min(...epoxySystems.map((x) => x.priceOver500));
+  const priceCeiling = Math.max(...epoxySystems.map((x) => x.priceUnder100));
   const crumbs = [
     { name: 'Beranda', path: '/' },
     { name: 'Harga Epoxy Lantai', path: PATH },
@@ -199,7 +209,7 @@ export default async function HargaPage() {
               </p>
             </div>
           </div>
-          <PriceCalculator />
+          <PriceCalculator systems={epoxySystems} curvingPrice={curvingPrice} />
         </div>
       </section>
 

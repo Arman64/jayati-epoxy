@@ -27,7 +27,39 @@ WhatsApp rusak diam-diam dan tombol berhenti berfungsi.
 
 ---
 
-## 2. Pengaturan halaman — `/admin/halaman`
+## 2. Konten situs — `/admin/konten`
+
+Hanya **Pemilik**. Di sinilah data yang dipakai berulang di banyak halaman
+disimpan satu kali. Mengubahnya di sini akan mengubah **seluruh halaman**
+yang memakainya — termasuk beranda, halaman harga, landing page iklan, dan
+halaman buatan sendiri.
+
+| Koleksi | Isi | Terpakai di |
+|---|---|---|
+| Sistem Epoxy | Nama, ketebalan, dan harga tiga tier | Harga, beranda, kalkulator, kartu sistem |
+| Layanan Utama | Kartu layanan + tautannya | Beranda, footer |
+| Layanan Lain | Layanan pendukung | Tentang kami, jasa |
+| Tahapan Kerja | Langkah pengerjaan bernomor | Jasa, halaman kustom |
+| Alasan Memilih Kami | Daftar keunggulan | Beranda |
+| FAQ Umum | Pertanyaan umum | Beranda, jasa, LP |
+| FAQ Harga | Pertanyaan seputar biaya | Halaman harga |
+| Angka Kepercayaan | Statistik singkat | Beranda |
+| Kota | Daftar kota layanan | Area layanan, footer |
+
+Setiap item bisa diurutkan (**↑ ↓**), dinonaktifkan sementara, atau dihapus.
+Item yang dinonaktifkan langsung hilang dari semua halaman publik, dan
+penomoran tahapan menyesuaikan sendiri.
+
+**Pengaman harga.** Harga tier besar tidak boleh lebih mahal daripada tier
+kecil — sistem menolak simpanan semacam itu dan menjelaskan alasannya. Kolom
+wajib yang kosong juga ditolak sebelum tersimpan.
+
+Setiap perubahan disimpan beserta versi sebelumnya, sehingga jejak siapa
+mengubah apa tetap ada.
+
+---
+
+## 3. Pengaturan halaman — `/admin/halaman`
 
 Hanya **Pemilik**. Mengatur 13 halaman publik satu per satu:
 
@@ -44,9 +76,56 @@ Penghitung karakter berubah kuning bila panjang teks di luar rentang ideal.
 Halaman yang di-*noindex* atau dikeluarkan dari sitemap otomatis hilang dari
 `sitemap.xml` — tidak ada langkah manual tambahan.
 
+### Membuat halaman baru
+
+Di bagian bawah `/admin/halaman` ada **Halaman buatan sendiri**. Tekan
+**+ Halaman baru**, isi nama halaman, lalu alamatnya terisi otomatis (bisa
+diubah). Halaman baru selalu lahir sebagai **draf** — belum bisa dibuka
+pengunjung dan belum masuk sitemap sampai Anda menekan **Terbitkan**.
+
+Alamat yang sudah dipakai halaman bawaan (`/kontak`, `/blog`, `/admin`, dan
+lainnya) akan ditolak, begitu pula alamat berhuruf besar atau berspasi.
+
+### Menyusun isi halaman
+
+Buka halaman buatan Anda untuk masuk ke penyusun seksi. Tersedia 15 jenis seksi:
+
+| Seksi | Isi |
+|---|---|
+| Hero | Judul H1, paragraf pembuka, dua tombol |
+| Jawaban singkat | Kotak jawaban 40–60 kata di awal halaman |
+| Teks bebas | Satu judul H2 dan beberapa paragraf |
+| Daftar centang | Judul dengan poin bertanda centang |
+| Kartu sistem epoxy | Otomatis dari Konten → Sistem Epoxy, lengkap harga |
+| Tabel harga | Pricelist per m² menurut tier luas |
+| Kalkulator estimasi | Kalkulator biaya interaktif |
+| Tahapan pengerjaan | Otomatis dari Konten → Tahapan Kerja |
+| Alasan memilih kami | Otomatis dari Konten → Alasan Memilih Kami |
+| Kartu layanan | Otomatis dari Konten → Layanan Utama |
+| Angka kepercayaan | Otomatis dari Konten → Angka Kepercayaan |
+| Galeri proyek | Foto proyek asli perusahaan |
+| Daftar FAQ | Dari FAQ Umum atau FAQ Harga + JSON-LD FAQPage |
+| Formulir penawaran | Formulir lengkap, prospek masuk ke menu Prospek |
+| Ajakan bertindak | Blok ajakan dengan tombol |
+
+Tiap seksi punya tombol **↑ ↓** untuk urutan, **Sembunyikan** untuk
+menonaktifkan sementara tanpa menghapus, **Ubah isi** untuk mengedit teks, dan
+**Hapus**. Semua perubahan langsung tersimpan.
+
+Seksi yang menarik data dari menu Konten tidak perlu diisi ulang — begitu harga
+atau FAQ diubah di sana, halaman ini ikut berubah.
+
+Hero, Jawaban singkat, Kalkulator, dan Formulir hanya boleh satu per halaman.
+Bila Anda tidak memasang seksi Hero, sistem tetap membuatkan satu H1 dari nama
+halaman agar struktur SEO tidak rusak.
+
+**Halaman bawaan** (Beranda, Harga, Kontak, dan seterusnya) tidak bisa disusun
+ulang di sini — tata letaknya dipegang kode agar kecepatan dan SEO-nya terjaga.
+Teksnya diubah lewat kolom di atas atau menu Konten.
+
 ---
 
-## 3. Blog — `/admin/blog`
+## 4. Blog — `/admin/blog`
 
 Staf boleh menulis dan mengajukan; **hanya Pemilik yang boleh menyetujui dan
 menerbitkan.**
@@ -84,7 +163,7 @@ Setiap perubahan tersimpan sebagai revisi dan tampil di "Riwayat revisi".
 
 ---
 
-## 4. Tombol telepon & WhatsApp
+## 5. Tombol telepon & WhatsApp
 
 Diatur di **Pengaturan → Tombol CTA**.
 
@@ -101,7 +180,7 @@ sehingga bisa dibandingkan mana yang paling menghasilkan.
 
 ---
 
-## 5. Otomasi konten MCP — `/admin/mcp`
+## 6. Otomasi konten MCP — `/admin/mcp`
 
 Hanya **Pemilik**. Memungkinkan asisten AI menyusun brief dan draf artikel
 lewat `POST /api/mcp`.
@@ -167,4 +246,5 @@ dikenal · `422` `tool`/`request_id` kosong · `400` galat saat menjalankan.
 | Dasbor, Prospek | ✅ | ✅ |
 | Blog — tulis, edit, ajukan | ✅ | ✅ |
 | Blog — setujui, terbitkan, hapus | ✅ | ❌ |
-| Halaman, Pengaturan, Otomasi, Pengguna | ✅ | ❌ |
+| Konten, Halaman, Pengaturan, Otomasi, Pengguna | ✅ | ❌ |
+| Buat/hapus/terbitkan halaman | ✅ | ❌ |

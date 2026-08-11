@@ -13,7 +13,8 @@ import {
   SectionHead,
 } from '@/components/Sections';
 import { QuotationForm } from '@/components/QuotationForm';
-import { formatRupiah, epoxySystems, priceForArea } from '@/lib/content';
+import { formatRupiah, priceForArea } from '@/lib/content';
+import { getEpoxySystems } from '@/lib/content-db';
 import { IconArrow, IconWhatsApp } from '@/components/Icons';
 import { waLink } from '@/lib/site';
 import { TrackedLink } from '@/components/TrackedLink';
@@ -68,14 +69,16 @@ const areas = [
   },
 ];
 
-const homeFaqs = [
+/** Dibuat sebagai fungsi agar harga selalu mengikuti pricelist di CMS. */
+function buildHomeFaqs(basePrice: number) {
+  return [
   {
     q: 'Apakah epoxy cocok untuk lantai rumah?',
     a: 'Cocok untuk area fungsional seperti garasi, dapur, kamar mandi, dan teras karena permukaannya menyatu tanpa nat sehingga mudah dibersihkan. Untuk kamar tidur dan ruang tamu, banyak pemilik rumah tetap memilih keramik atau vinyl karena pertimbangan estetika dan kehangatan ruangan.',
   },
   {
     q: 'Berapa biaya epoxy lantai rumah untuk garasi 40 m²?',
-    a: `Dengan Self-Leveling 1.000 micron pada tier luas di bawah 100 m² yaitu ${formatRupiah(190000)} per m², garasi 40 m² berada di kisaran ${formatRupiah(190000 * 40)} sebelum penyesuaian kondisi lantai. Bila lantai berupa keramik atau memiliki retak, biaya persiapan bertambah.`,
+    a: `Dengan Self-Leveling 1.000 micron pada tier luas di bawah 100 m² yaitu ${formatRupiah(basePrice)} per m², garasi 40 m² berada di kisaran ${formatRupiah(basePrice * 40)} sebelum penyesuaian kondisi lantai. Bila lantai berupa keramik atau memiliki retak, biaya persiapan bertambah.`,
   },
   {
     q: 'Apakah epoxy membuat lantai kamar mandi licin?',
@@ -88,11 +91,22 @@ const homeFaqs = [
   {
     q: 'Apakah ada bau menyengat saat pengerjaan?',
     a: 'Material epoxy memiliki bau khas saat aplikasi dan beberapa jam setelahnya. Kami mengatur ventilasi selama pengerjaan, dan bau umumnya hilang setelah lapisan mengering. Untuk area dalam rumah, pengerjaan dijadwalkan agar ventilasi maksimal.',
-  },
-];
+    },
+  ];
+}
 
 export default async function RumahPage() {
-  const o = await pageOverride(PATH);
+  const [o, epoxySystems] = await Promise.all([
+    pageOverride(PATH),
+    getEpoxySystems(),
+  ]);
+
+  // Harga contoh di FAQ mengikuti sistem 1.000 micron yang aktif di CMS.
+  const basePrice =
+    epoxySystems.find((x) => x.micron === 1000)?.priceUnder100 ??
+    epoxySystems[0]?.priceUnder100 ??
+    0;
+  const homeFaqs = buildHomeFaqs(basePrice);
   const crumbs = [
     { name: 'Beranda', path: '/' },
     { name: 'Epoxy Lantai Rumah', path: PATH },
