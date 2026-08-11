@@ -9,7 +9,7 @@ import {
   CtaBand,
   Disclaimer,
   FaqList,
-  PhotoSlot,
+  ProjectPhoto,
   SectionHead,
 } from '@/components/Sections';
 import { QuotationForm } from '@/components/QuotationForm';
@@ -173,7 +173,18 @@ export default async function RumahPage() {
               </Link>
             </div>
           </div>
-          <PhotoSlot label="Foto Garasi / Dapur Hasil Pengerjaan" caption="Gunakan foto before-after area rumah yang sudah mendapat izin klien." />
+          {/* Foto asli dokumentasi perusahaan, bukan placeholder. */}
+          <ProjectPhoto
+            photo={{
+              src: '/img/proyek/dapur-komersial-self-leveling/3.webp',
+              width: 1200,
+              height: 1600,
+              alt: 'Ruangan dengan lantai epoxy self-leveling putih mengilap tanpa sambungan',
+              caption: 'Hasil self-leveling: permukaan rata tanpa nat, mudah dibersihkan.',
+            }}
+            ratio="aspect-[4/3]"
+            sizes="(min-width: 1024px) 520px, 100vw"
+          />
         </div>
       </section>
 

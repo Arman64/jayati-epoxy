@@ -207,35 +207,3 @@ export function ProjectPhoto({
   );
 }
 
-/**
- * Placeholder foto. Dipertahankan untuk area yang belum memiliki dokumentasi
- * asli — PRD §5.1 melarang stock photo.
- */
-export function PhotoSlot({
-  label,
-  caption,
-  className = '',
-  ratio = 'aspect-[4/3]',
-}: {
-  label: string;
-  caption?: string;
-  className?: string;
-  ratio?: string;
-}) {
-  return (
-    <figure className={className}>
-      <div
-        className={`${ratio} grid w-full place-items-center rounded-2xl border-2 border-dashed border-navy-900/20 bg-gradient-to-br from-cream-100 to-cream-300 p-6 text-center`}
-      >
-        <div>
-          <span className="mx-auto block h-9 w-9 rounded-full bg-leaf-100" aria-hidden />
-          <p className="mt-3 text-[13px] font-bold text-navy-900">{label}</p>
-          <p className="mt-1 text-[11px] font-medium uppercase tracking-wider text-slate-500">
-            Slot foto proyek asli
-          </p>
-        </div>
-      </div>
-      {caption ? <figcaption className="mt-2 text-xs text-slate-500">{caption}</figcaption> : null}
-    </figure>
-  );
-}

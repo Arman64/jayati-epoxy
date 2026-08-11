@@ -46,6 +46,17 @@ const nextConfig = {
       { source: '/epoxy-rumah', destination: '/epoxy-lantai-rumah', permanent: true },
       { source: '/epoxy-industri', destination: '/epoxy-lantai-industri', permanent: true },
       { source: '/kontak-kami', destination: '/kontak', permanent: true },
+
+      // Slug portofolio contoh yang dihapus setelah data proyek asli masuk.
+      { source: '/portofolio/gudang-logistik-sidoarjo', destination: '/portofolio', permanent: true },
+      { source: '/portofolio/garasi-rumah-malang', destination: '/portofolio', permanent: true },
+      { source: '/portofolio/dapur-produksi-surabaya', destination: '/portofolio', permanent: true },
+      { source: '/portofolio/showroom-otomotif-jakarta', destination: '/portofolio', permanent: true },
+
+      // Kota yang tidak lagi punya halaman sendiri — layanan bersifat nasional.
+      { source: '/area-layanan/bandung', destination: '/area-layanan', permanent: true },
+      { source: '/area-layanan/tangerang', destination: '/area-layanan', permanent: true },
+      { source: '/area-layanan/malang', destination: '/area-layanan', permanent: true },
     ];
   },
 };

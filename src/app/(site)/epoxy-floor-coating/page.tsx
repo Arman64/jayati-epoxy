@@ -9,7 +9,7 @@ import {
   CtaBand,
   Disclaimer,
   FaqList,
-  PhotoSlot,
+  ProjectPhoto,
   SectionHead,
 } from '@/components/Sections';
 import { QuotationForm } from '@/components/QuotationForm';
@@ -124,7 +124,18 @@ export default async function CoatingPage() {
               </Link>
             </div>
           </div>
-          <PhotoSlot label="Aplikasi Roll Floor Coating" caption="Gunakan foto proses aplikasi roll di lokasi proyek." />
+          {/* Foto asli dokumentasi perusahaan, bukan placeholder. */}
+          <ProjectPhoto
+            photo={{
+              src: '/img/proyek/clean-room-cold-storage/3.webp',
+              width: 1200,
+              height: 1600,
+              alt: 'Pekerja meratakan lapisan pelapis lantai di ruang berdinding panel',
+              caption: 'Proses aplikasi lapisan oleh tim di lokasi proyek.',
+            }}
+            ratio="aspect-[4/3]"
+            sizes="(min-width: 1024px) 520px, 100vw"
+          />
         </div>
       </section>
 
