@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { buildMetadata, breadcrumbSchema, faqSchema, serviceSchema } from '@/lib/seo';
+import { pageOverride } from '@/lib/pages';
 import { JsonLd } from '@/components/JsonLd';
 import {
   AnswerBox,
@@ -17,12 +18,20 @@ import { IconArrow } from '@/components/Icons';
 
 const PATH = '/harga-epoxy-lantai';
 
-export const metadata = buildMetadata({
-  title: 'Harga Epoxy Lantai per m2 — Pricelist Resmi',
-  description:
-    'Pricelist resmi epoxy lantai per m2: Self-Leveling 1.000–2.000 micron dan PU Crete 3.000–9.000 micron. Harga turun untuk area di atas 100 m2 dan di atas 500 m2.',
-  path: PATH,
-});
+const DEFAULT_TITLE = 'Harga Epoxy Lantai per m2 — Pricelist Resmi';
+const DEFAULT_DESC =
+  'Pricelist resmi epoxy lantai per m2: Self-Leveling 1.000–2.000 micron dan PU Crete 3.000–9.000 micron. Harga turun untuk area di atas 100 m2 dan di atas 500 m2.';
+
+export async function generateMetadata() {
+  const o = await pageOverride(PATH);
+  return buildMetadata({
+    title: o.title || DEFAULT_TITLE,
+    description: o.description || DEFAULT_DESC,
+    path: PATH,
+    noindex: o.noindex,
+    ogImage: o.ogImage ?? undefined,
+  });
+}
 
 const priceFactors = [
   { title: 'Luas area', body: 'Pricelist kami memiliki tiga tier: di bawah 100 m², di atas 100 m², dan di atas 500 m². Semakin luas, semakin rendah harga per m².' },
@@ -33,7 +42,8 @@ const priceFactors = [
   { title: 'Lokasi proyek', body: 'Jarak, akses kendaraan, dan ketersediaan listrik memengaruhi biaya mobilisasi tim dan alat.' },
 ];
 
-export default function HargaPage() {
+export default async function HargaPage() {
+  const o = await pageOverride(PATH);
   const crumbs = [
     { name: 'Beranda', path: '/' },
     { name: 'Harga Epoxy Lantai', path: PATH },
@@ -59,10 +69,10 @@ export default function HargaPage() {
         <div className="max-w-3xl">
           <p className="eyebrow">Harga & Estimasi</p>
           <h1 className="mt-3 text-[1.8rem] leading-tight sm:text-4xl">
-            Harga Epoxy Lantai per m² dan Faktor yang Memengaruhinya
+            {o.h1 || 'Harga Epoxy Lantai per m² dan Faktor yang Memengaruhinya'}
           </h1>
           <div className="mt-6">
-            <AnswerBox>
+            <AnswerBox override={o.intro}>
               <p>
                 Harga jasa epoxy lantai kami berkisar {formatRupiah(priceFloor)} sampai{' '}
                 {formatRupiah(priceCeiling)} per m². Angka terendah berlaku untuk Self-Leveling

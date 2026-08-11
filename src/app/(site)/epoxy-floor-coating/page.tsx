@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { buildMetadata, breadcrumbSchema, faqSchema, serviceSchema } from '@/lib/seo';
+import { pageOverride } from '@/lib/pages';
 import { JsonLd } from '@/components/JsonLd';
 import {
   AnswerBox,
@@ -19,12 +20,20 @@ import { TrackedLink } from '@/components/TrackedLink';
 
 const PATH = '/epoxy-floor-coating';
 
-export const metadata = buildMetadata({
-  title: 'Epoxy Floor Coating — Pelapis Lantai Beton Pelindung',
-  description:
-    'Epoxy floor coating untuk melindungi lantai beton dari debu, abrasi, dan tumpahan. Cocok untuk gudang, area komersial, dan ruang produksi. Aplikasi roll berlapis oleh aplikator.',
-  path: PATH,
-});
+const DEFAULT_TITLE = 'Epoxy Floor Coating — Pelapis Lantai Beton Pelindung';
+const DEFAULT_DESC =
+  'Epoxy floor coating untuk melindungi lantai beton dari debu, abrasi, dan tumpahan. Cocok untuk gudang, area komersial, dan ruang produksi. Aplikasi roll berlapis oleh aplikator.';
+
+export async function generateMetadata() {
+  const o = await pageOverride(PATH);
+  return buildMetadata({
+    title: o.title || DEFAULT_TITLE,
+    description: o.description || DEFAULT_DESC,
+    path: PATH,
+    noindex: o.noindex,
+    ogImage: o.ogImage ?? undefined,
+  });
+}
 
 const coatingFaqs = [
   {
@@ -45,7 +54,8 @@ const coatingFaqs = [
   },
 ];
 
-export default function CoatingPage() {
+export default async function CoatingPage() {
+  const o = await pageOverride(PATH);
   const crumbs = [
     { name: 'Beranda', path: '/' },
     { name: 'Epoxy Floor Coating', path: PATH },
@@ -73,10 +83,10 @@ export default function CoatingPage() {
           <div>
             <p className="eyebrow">Floor Coating</p>
             <h1 className="mt-3 text-[1.8rem] leading-tight sm:text-4xl">
-              Epoxy Floor Coating untuk Melindungi Lantai Beton
+              {o.h1 || 'Epoxy Floor Coating untuk Melindungi Lantai Beton'}
             </h1>
             <div className="mt-6">
-              <AnswerBox>
+              <AnswerBox override={o.intro}>
                 <p>
                   Epoxy floor coating adalah lapisan pelindung setebal sekitar 200–300 micron yang
                   diaplikasikan di atas beton menggunakan roll. Lapisan ini menutup pori beton

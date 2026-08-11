@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { buildMetadata, breadcrumbSchema } from '@/lib/seo';
+import { pageOverride } from '@/lib/pages';
 import { JsonLd } from '@/components/JsonLd';
 import { Breadcrumbs, CtaBand, Disclaimer, ProjectPhoto, SectionHead } from '@/components/Sections';
 import { clientCount, clientGroups, projects } from '@/lib/content';
@@ -8,14 +9,23 @@ import { site } from '@/lib/site';
 
 const PATH = '/portofolio';
 
-export const metadata = buildMetadata({
-  title: 'Portofolio Proyek Epoxy Lantai',
-  description:
-    'Dokumentasi proyek epoxy lantai CV Semesta Bumi Jayati: dapur SPPG, ruang produksi higienis, clean room, dan cold storage. Foto asli dari lokasi pengerjaan.',
-  path: PATH,
-});
+const DEFAULT_TITLE = 'Portofolio Proyek Epoxy Lantai';
+const DEFAULT_DESC =
+  'Dokumentasi proyek epoxy lantai CV Semesta Bumi Jayati: dapur SPPG, ruang produksi higienis, clean room, dan cold storage. Foto asli dari lokasi pengerjaan.';
 
-export default function PortofolioPage() {
+export async function generateMetadata() {
+  const o = await pageOverride(PATH);
+  return buildMetadata({
+    title: o.title || DEFAULT_TITLE,
+    description: o.description || DEFAULT_DESC,
+    path: PATH,
+    noindex: o.noindex,
+    ogImage: o.ogImage ?? undefined,
+  });
+}
+
+export default async function PortofolioPage() {
+  const o = await pageOverride(PATH);
   const crumbs = [
     { name: 'Beranda', path: '/' },
     { name: 'Portofolio', path: PATH },
@@ -29,7 +39,7 @@ export default function PortofolioPage() {
       <section className="container-page py-10 sm:py-14">
         <SectionHead
           eyebrow="Portofolio"
-          title="Proyek epoxy lantai yang kami kerjakan"
+          title={o.h1 || 'Proyek epoxy lantai yang kami kerjakan'}
           lead={`Foto pada halaman ini adalah dokumentasi asli pengerjaan ${site.legalName} — bukan stock photo. Setiap proyek dilengkapi lingkup pekerjaan dan catatan lapangan.`}
           as="h1"
         />

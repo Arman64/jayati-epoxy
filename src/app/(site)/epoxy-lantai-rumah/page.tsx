@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { buildMetadata, breadcrumbSchema, faqSchema, serviceSchema } from '@/lib/seo';
+import { pageOverride } from '@/lib/pages';
 import { JsonLd } from '@/components/JsonLd';
 import {
   AnswerBox,
@@ -19,12 +20,20 @@ import { TrackedLink } from '@/components/TrackedLink';
 
 const PATH = '/epoxy-lantai-rumah';
 
-export const metadata = buildMetadata({
-  title: 'Epoxy Lantai Rumah — Garasi, Kamar Mandi & Keramik',
-  description:
-    'Jasa epoxy lantai rumah untuk garasi, carport, kamar mandi, dapur, dan lantai keramik lama. Permukaan tanpa nat, mudah dibersihkan, dikerjakan aplikator berpengalaman.',
-  path: PATH,
-});
+const DEFAULT_TITLE = 'Epoxy Lantai Rumah — Garasi, Kamar Mandi & Keramik';
+const DEFAULT_DESC =
+  'Jasa epoxy lantai rumah untuk garasi, carport, kamar mandi, dapur, dan lantai keramik lama. Permukaan tanpa nat, mudah dibersihkan, dikerjakan aplikator berpengalaman.';
+
+export async function generateMetadata() {
+  const o = await pageOverride(PATH);
+  return buildMetadata({
+    title: o.title || DEFAULT_TITLE,
+    description: o.description || DEFAULT_DESC,
+    path: PATH,
+    noindex: o.noindex,
+    ogImage: o.ogImage ?? undefined,
+  });
+}
 
 const areas = [
   {
@@ -82,7 +91,8 @@ const homeFaqs = [
   },
 ];
 
-export default function RumahPage() {
+export default async function RumahPage() {
+  const o = await pageOverride(PATH);
   const crumbs = [
     { name: 'Beranda', path: '/' },
     { name: 'Epoxy Lantai Rumah', path: PATH },
@@ -109,10 +119,10 @@ export default function RumahPage() {
           <div>
             <p className="eyebrow">Epoxy Rumah</p>
             <h1 className="mt-3 text-[1.8rem] leading-tight sm:text-4xl">
-              Epoxy Lantai Rumah untuk Garasi, Kamar Mandi, dan Keramik Lama
+              {o.h1 || 'Epoxy Lantai Rumah untuk Garasi, Kamar Mandi, dan Keramik Lama'}
             </h1>
             <div className="mt-6">
-              <AnswerBox>
+              <AnswerBox override={o.intro}>
                 <p>
                   Epoxy lantai rumah adalah pelapisan lantai hunian dengan resin epoxy agar
                   permukaan menyatu tanpa nat, tidak berdebu, dan mudah dibersihkan. Paling sesuai

@@ -37,9 +37,12 @@ const pool = new pg.Pool({
 const cmd = process.argv[2];
 
 async function migrate() {
-  const sql = readFileSync(path.join(process.cwd(), 'db', 'schema.sql'), 'utf8');
-  await pool.query(sql);
-  console.log('✓ Skema database diterapkan.');
+  for (const f of ['schema.sql', 'schema-cms.sql']) {
+    const file = path.join(process.cwd(), 'db', f);
+    if (!existsSync(file)) continue;
+    await pool.query(readFileSync(file, 'utf8'));
+    console.log(`✓ ${f} diterapkan.`);
+  }
 }
 
 async function seed() {

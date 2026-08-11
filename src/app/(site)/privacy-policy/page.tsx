@@ -1,16 +1,25 @@
 import { buildMetadata, breadcrumbSchema } from '@/lib/seo';
+import { pageOverride } from '@/lib/pages';
 import { JsonLd } from '@/components/JsonLd';
 import { Breadcrumbs, Disclaimer } from '@/components/Sections';
 import { site } from '@/lib/site';
 
 const PATH = '/privacy-policy';
 
-export const metadata = buildMetadata({
-  title: 'Kebijakan Privasi',
-  description:
-    'Kebijakan privasi Jayati Epoxy mengenai pengumpulan, penggunaan, penyimpanan, dan perlindungan data pengunjung serta calon pelanggan.',
-  path: PATH,
-});
+const DEFAULT_TITLE = 'Kebijakan Privasi';
+const DEFAULT_DESC =
+  'Kebijakan privasi Jayati Epoxy mengenai pengumpulan, penggunaan, penyimpanan, dan perlindungan data pengunjung serta calon pelanggan.';
+
+export async function generateMetadata() {
+  const o = await pageOverride(PATH);
+  return buildMetadata({
+    title: o.title || DEFAULT_TITLE,
+    description: o.description || DEFAULT_DESC,
+    path: PATH,
+    noindex: o.noindex,
+    ogImage: o.ogImage ?? undefined,
+  });
+}
 
 const sections = [
   {
@@ -55,7 +64,8 @@ const sections = [
   },
 ];
 
-export default function PrivacyPage() {
+export default async function PrivacyPage() {
+  const o = await pageOverride(PATH);
   const crumbs = [
     { name: 'Beranda', path: '/' },
     { name: 'Kebijakan Privasi', path: PATH },
@@ -67,7 +77,7 @@ export default function PrivacyPage() {
       <Breadcrumbs items={crumbs} />
       <article className="container-page py-10 sm:py-14">
         <div className="mx-auto max-w-3xl">
-          <h1 className="text-[1.8rem] leading-tight sm:text-4xl">Kebijakan Privasi</h1>
+          <h1 className="text-[1.8rem] leading-tight sm:text-4xl">{o.h1 || 'Kebijakan Privasi'}</h1>
           <p className="mt-3 text-[13px] text-slate-500">
             Terakhir diperbarui: {site.priceLastReviewed}
           </p>

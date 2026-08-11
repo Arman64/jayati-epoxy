@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { buildMetadata, breadcrumbSchema, faqSchema, serviceSchema } from '@/lib/seo';
+import { pageOverride } from '@/lib/pages';
 import { JsonLd } from '@/components/JsonLd';
 import {
   AnswerBox,
@@ -19,12 +20,20 @@ import { QuotationForm } from '@/components/QuotationForm';
 
 const PATH = '/jasa-epoxy-lantai';
 
-export const metadata = buildMetadata({
-  title: 'Jasa Epoxy Lantai — Kontraktor & Aplikator Profesional',
-  description:
-    'Jasa epoxy lantai oleh kontraktor dan aplikator berpengalaman. Survei lokasi, persiapan permukaan, sistem Self-Leveling hingga PU Crete 9.000 micron. Penawaran tertulis.',
-  path: PATH,
-});
+const DEFAULT_TITLE = 'Jasa Epoxy Lantai — Kontraktor & Aplikator Profesional';
+const DEFAULT_DESC =
+  'Jasa epoxy lantai oleh kontraktor dan aplikator berpengalaman. Survei lokasi, persiapan permukaan, sistem Self-Leveling hingga PU Crete 9.000 micron. Penawaran tertulis.';
+
+export async function generateMetadata() {
+  const o = await pageOverride(PATH);
+  return buildMetadata({
+    title: o.title || DEFAULT_TITLE,
+    description: o.description || DEFAULT_DESC,
+    path: PATH,
+    noindex: o.noindex,
+    ogImage: o.ogImage ?? undefined,
+  });
+}
 
 const serviceFaqs = [
   {
@@ -42,7 +51,8 @@ const serviceFaqs = [
   ...generalFaqs.slice(0, 4),
 ];
 
-export default function JasaEpoxyPage() {
+export default async function JasaEpoxyPage() {
+  const o = await pageOverride(PATH);
   const crumbs = [
     { name: 'Beranda', path: '/' },
     { name: 'Jasa Epoxy Lantai', path: PATH },
@@ -70,10 +80,10 @@ export default function JasaEpoxyPage() {
           <div>
             <p className="eyebrow">Jasa Epoxy Lantai</p>
             <h1 className="mt-3 text-[1.8rem] leading-tight sm:text-4xl">
-              Jasa Epoxy Lantai oleh Kontraktor & Aplikator Profesional
+              {o.h1 || 'Jasa Epoxy Lantai oleh Kontraktor & Aplikator Profesional'}
             </h1>
             <div className="mt-6">
-              <AnswerBox>
+              <AnswerBox override={o.intro}>
                 <p>
                   Jasa epoxy lantai adalah layanan pelapisan lantai beton dengan resin epoxy dua
                   komponen, mencakup persiapan permukaan, primer, lapisan utama, dan topcoat. Kami

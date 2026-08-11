@@ -3,17 +3,18 @@ import { notFound } from 'next/navigation';
 import { articleSchema, buildMetadata, breadcrumbSchema, faqSchema } from '@/lib/seo';
 import { JsonLd } from '@/components/JsonLd';
 import { AnswerBox, Breadcrumbs, CtaBand, FaqList, SectionHead } from '@/components/Sections';
-import { posts } from '@/lib/content';
+import { getPublishedPost, getPublishedPosts } from '@/lib/posts';
 import { IconArrow, IconClock } from '@/components/Icons';
 
 type Props = { params: { slug: string } };
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const posts = await getPublishedPosts();
   return posts.map((p) => ({ slug: p.slug }));
 }
 
-export function generateMetadata({ params }: Props) {
-  const post = posts.find((p) => p.slug === params.slug);
+export async function generateMetadata({ params }: Props) {
+  const post = await getPublishedPost(params.slug);
   if (!post) {
     return buildMetadata({
       title: 'Artikel Tidak Ditemukan',
@@ -27,8 +28,9 @@ export function generateMetadata({ params }: Props) {
     description: post.description,
     path: `/blog/${post.slug}`,
     type: 'article',
-    publishedTime: post.published,
-    modifiedTime: post.modified,
+    publishedTime: post.publishedAt ?? post.createdAt,
+    modifiedTime: post.updatedAt,
+    noindex: post.noindex,
   });
 }
 
@@ -36,11 +38,12 @@ function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
-export default function PostPage({ params }: Props) {
-  const post = posts.find((p) => p.slug === params.slug);
+export default async function PostPage({ params }: Props) {
+  const post = await getPublishedPost(params.slug);
   if (!post) notFound();
 
-  const related = posts.filter((p) => p.slug !== post.slug).slice(0, 3);
+  const all = await getPublishedPosts();
+  const related = all.filter((p) => p.slug !== post.slug).slice(0, 3);
   const crumbs = [
     { name: 'Beranda', path: '/' },
     { name: 'Blog', path: '/blog' },
@@ -58,10 +61,10 @@ export default function PostPage({ params }: Props) {
             path: `/blog/${post.slug}`,
             author: post.author,
             reviewer: post.reviewer,
-            published: post.published,
-            modified: post.modified,
+            published: post.publishedAt ?? post.createdAt,
+            modified: post.updatedAt,
           }),
-          ...(post.faqs?.length ? [faqSchema(post.faqs)] : []),
+          ...(post.faqs.length ? [faqSchema(post.faqs)] : []),
         ]}
       />
       <Breadcrumbs items={crumbs} />
@@ -86,8 +89,8 @@ export default function PostPage({ params }: Props) {
               {post.readMinutes} menit baca
             </p>
             <p>
-              Terbit {formatDate(post.published)} · Diperbarui{' '}
-              <time dateTime={post.modified}>{formatDate(post.modified)}</time>
+              Terbit {formatDate(post.publishedAt ?? post.createdAt)} · Diperbarui{' '}
+              <time dateTime={post.updatedAt}>{formatDate(post.updatedAt)}</time>
             </p>
           </div>
 
@@ -142,7 +145,7 @@ export default function PostPage({ params }: Props) {
         </div>
       </article>
 
-      {post.faqs?.length ? <FaqList faqs={post.faqs} title="Pertanyaan Terkait" /> : null}
+      {post.faqs.length ? <FaqList faqs={post.faqs} title="Pertanyaan Terkait" /> : null}
 
       <section className="bg-cream-100 py-14">
         <div className="container-page">

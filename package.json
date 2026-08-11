@@ -13,7 +13,8 @@
     "db:seed": "node scripts/db.mjs seed",
     "db:import": "node scripts/db.mjs import-jsonl",
     "db:status": "node scripts/db.mjs status",
-    "db:purge-test": "node scripts/db.mjs purge-test"
+    "db:purge-test": "node scripts/db.mjs purge-test",
+    "db:seed-cms": "node scripts/seed-cms.mjs"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

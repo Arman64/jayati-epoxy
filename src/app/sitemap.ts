@@ -1,6 +1,8 @@
 import type { MetadataRoute } from 'next';
 import { site } from '@/lib/site';
-import { posts, projects } from '@/lib/content';
+import { projects } from '@/lib/content';
+import { getPublishedPosts } from '@/lib/posts';
+import { getPageMap } from '@/lib/pages';
 import { cityContents } from '@/lib/cityContent';
 
 /**
@@ -8,7 +10,12 @@ import { cityContents } from '@/lib/cityContent';
  * Halaman /terima-kasih, /lp/*, dan API sengaja TIDAK dimasukkan karena
  * noindex (thank-you) atau merupakan halaman iklan berbayar.
  */
-export default function sitemap(): MetadataRoute.Sitemap {
+// Sitemap dibangun saat diminta agar perubahan noindex/inSitemap dari CMS
+// langsung tercermin tanpa perlu build ulang.
+export const dynamic = 'force-dynamic';
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const posts = await getPublishedPosts();
   const now = new Date();
 
   const staticPages: { path: string; priority: number; freq: MetadataRoute.Sitemap[number]['changeFrequency'] }[] = [
@@ -27,7 +34,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/terms', priority: 0.2, freq: 'yearly' },
   ];
 
-  return [
+  const entries: MetadataRoute.Sitemap = [
     ...staticPages.map((p) => ({
       url: `${site.url}${p.path === '/' ? '' : p.path}`,
       lastModified: now,
@@ -48,9 +55,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })),
     ...posts.map((p) => ({
       url: `${site.url}/blog/${p.slug}`,
-      lastModified: new Date(p.modified),
+      lastModified: new Date(p.updatedAt),
       changeFrequency: 'monthly' as const,
       priority: 0.6,
     })),
   ];
+
+  // Hormati pengaturan CMS: halaman yang di-noindex atau dikeluarkan dari
+  // sitemap oleh Owner tidak boleh ikut terdaftar.
+  const overrides = await getPageMap();
+  return entries.filter((e) => {
+    const path = e.url.replace(site.url, '') || '/';
+    const o = overrides[path];
+    if (!o) return true;
+    return o.inSitemap && !o.noindex;
+  });
 }

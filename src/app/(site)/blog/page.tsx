@@ -2,29 +2,38 @@ import Link from 'next/link';
 import { buildMetadata, breadcrumbSchema } from '@/lib/seo';
 import { JsonLd } from '@/components/JsonLd';
 import { Breadcrumbs, CtaBand, SectionHead } from '@/components/Sections';
-import { posts } from '@/lib/content';
+import { getPublishedPosts } from '@/lib/posts';
+import { pageOverride } from '@/lib/pages';
 import { IconArrow, IconClock } from '@/components/Icons';
 
 const PATH = '/blog';
 
-export const metadata = buildMetadata({
-  title: 'Blog Epoxy Lantai — Panduan, Harga, dan Perawatan',
-  description:
-    'Artikel praktis seputar epoxy lantai: cara menghitung biaya, perbandingan epoxy dan keramik, penyebab lantai mengelupas, serta tahapan pemasangan yang benar.',
-  path: PATH,
-});
+const DEFAULT_TITLE = 'Blog Epoxy Lantai — Panduan, Harga, dan Perawatan';
+const DEFAULT_DESC =
+  'Artikel praktis seputar epoxy lantai: cara menghitung biaya, perbandingan epoxy dan keramik, penyebab lantai mengelupas, serta tahapan pemasangan yang benar.';
+
+export async function generateMetadata() {
+  const o = await pageOverride(PATH);
+  return buildMetadata({
+    title: o.title || DEFAULT_TITLE,
+    description: o.description || DEFAULT_DESC,
+    path: PATH,
+    noindex: o.noindex,
+    ogImage: o.ogImage ?? undefined,
+  });
+}
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
-export default function BlogPage() {
+export default async function BlogPage() {
   const crumbs = [
     { name: 'Beranda', path: '/' },
     { name: 'Blog', path: PATH },
   ];
-  const sorted = [...posts].sort((a, b) => b.published.localeCompare(a.published));
-  const [featured, ...rest] = sorted;
+  const [posts, o] = await Promise.all([getPublishedPosts(), pageOverride(PATH)]);
+  const [featured, ...rest] = posts;
 
   return (
     <>
@@ -34,8 +43,11 @@ export default function BlogPage() {
       <section className="container-page py-10 sm:py-14">
         <SectionHead
           eyebrow="Blog"
-          title="Panduan praktis seputar epoxy lantai"
-          lead="Artikel disusun tim teknis berdasarkan pengalaman lapangan, lalu ditinjau sebelum diterbitkan. Setiap tulisan mencantumkan penulis, peninjau, dan tanggal pembaruan."
+          title={o.h1 || 'Panduan praktis seputar epoxy lantai'}
+          lead={
+            o.intro ||
+            'Artikel disusun tim teknis berdasarkan pengalaman lapangan, lalu ditinjau sebelum diterbitkan. Setiap tulisan mencantumkan penulis, peninjau, dan tanggal pembaruan.'
+          }
           as="h1"
         />
       </section>
@@ -58,12 +70,20 @@ export default function BlogPage() {
                 <IconClock className="h-3.5 w-3.5" />
                 {featured.readMinutes} menit baca
               </span>
-              <span>Diperbarui {formatDate(featured.modified)}</span>
+              <span>Diperbarui {formatDate(featured.updatedAt)}</span>
             </div>
             <Link href={`${PATH}/${featured.slug}`} className="btn-primary mt-6">
               Baca Artikel <IconArrow className="h-4 w-4" />
             </Link>
           </article>
+        </section>
+      ) : null}
+
+      {posts.length === 0 ? (
+        <section className="container-page pb-14">
+          <p className="card text-center text-sm text-slate-600">
+            Belum ada artikel yang diterbitkan.
+          </p>
         </section>
       ) : null}
 
@@ -87,7 +107,7 @@ export default function BlogPage() {
                     <IconClock className="h-3.5 w-3.5" />
                     {p.readMinutes} menit
                   </span>
-                  <span>Diperbarui {formatDate(p.modified)}</span>
+                  <span>Diperbarui {formatDate(p.updatedAt)}</span>
                 </p>
               </div>
             </article>

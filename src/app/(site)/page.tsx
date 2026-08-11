@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { buildMetadata, breadcrumbSchema, faqSchema } from '@/lib/seo';
+import { pageOverride } from '@/lib/pages';
 import { JsonLd } from '@/components/JsonLd';
 import {
   AnswerBox,
@@ -27,12 +28,22 @@ import { iconMap, IconArrow, IconCheck, IconWhatsApp, IconMapPin } from '@/compo
 import { defaultWaMessage, site, waLink } from '@/lib/site';
 import { TrackedLink } from '@/components/TrackedLink';
 
-export const metadata = buildMetadata({
-  title: 'Jasa Epoxy Lantai Industri & Dapur SPPG — CV Semesta Bumi Jayati',
-  description:
-    'Kontraktor epoxy lantai untuk dapur SPPG, pabrik, clean room, dan cold storage. Self-leveling dan PU Crete 1.000–9.000 micron, material standar ISO 9001. Melayani seluruh Indonesia.',
-  path: '/',
-});
+const PATH = '/';
+
+const DEFAULT_TITLE = 'Jasa Epoxy Lantai Industri & Dapur SPPG — CV Semesta Bumi Jayati';
+const DEFAULT_DESC =
+  'Kontraktor epoxy lantai untuk dapur SPPG, pabrik, clean room, dan cold storage. Self-leveling dan PU Crete 1.000–9.000 micron, material standar ISO 9001. Melayani seluruh Indonesia.';
+
+export async function generateMetadata() {
+  const o = await pageOverride(PATH);
+  return buildMetadata({
+    title: o.title || DEFAULT_TITLE,
+    description: o.description || DEFAULT_DESC,
+    path: PATH,
+    noindex: o.noindex,
+    ogImage: o.ogImage ?? undefined,
+  });
+}
 
 /** Angka & klaim bersumber dari company profile resmi (hal. 4, 6, 12). */
 const trustPoints = [
@@ -42,7 +53,8 @@ const trustPoints = [
   { label: 'Layanan', value: 'Bergaransi', note: 'Garansi resmi tertulis' },
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  const o = await pageOverride(PATH);
   const breadcrumb = breadcrumbSchema([{ name: 'Beranda', path: '/' }]);
   const heroProject = projects[0]!;
   const heroPhoto = heroProject.photos[0]!;
@@ -67,7 +79,7 @@ export default function HomePage() {
               CV Semesta Bumi Jayati · Construction &amp; Industrial Solutions
             </p>
             <h1 className="mt-5 text-[1.85rem] leading-[1.15] text-white sm:text-4xl lg:text-[2.95rem]">
-              Jasa Epoxy Lantai Industri, Dapur SPPG, dan Clean Room
+              {o.h1 || 'Jasa Epoxy Lantai Industri, Dapur SPPG, dan Clean Room'}
             </h1>
             <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-white/80 sm:text-lg">
               Kami menyediakan solusi konstruksi industri yang mengutamakan kualitas, keamanan, dan
@@ -163,7 +175,7 @@ export default function HomePage() {
               title="Apa itu jasa epoxy lantai?"
               as="h2"
             />
-            <AnswerBox>
+            <AnswerBox override={o.intro}>
               <p>
                 Epoxy flooring adalah sistem pelapisan lantai yang dirancang untuk meningkatkan
                 kekuatan, ketahanan, serta kebersihan permukaan lantai pada berbagai fasilitas

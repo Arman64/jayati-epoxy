@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { buildMetadata, breadcrumbSchema } from '@/lib/seo';
+import { pageOverride } from '@/lib/pages';
 import { JsonLd } from '@/components/JsonLd';
 import { AnswerBox, Breadcrumbs, CtaBand, Disclaimer, SectionHead } from '@/components/Sections';
 import { cities } from '@/lib/content';
@@ -8,14 +9,23 @@ import { site } from '@/lib/site';
 
 const PATH = '/area-layanan';
 
-export const metadata = buildMetadata({
-  title: 'Area Layanan Jasa Epoxy Lantai',
-  description:
-    'CV Semesta Bumi Jayati melayani pekerjaan epoxy lantai di seluruh Indonesia. Proyek kami tersebar di Kediri, Nganjuk, Madura, Jawa Tengah, hingga Jakarta.',
-  path: PATH,
-});
+const DEFAULT_TITLE = 'Area Layanan Jasa Epoxy Lantai';
+const DEFAULT_DESC =
+  'CV Semesta Bumi Jayati melayani pekerjaan epoxy lantai di seluruh Indonesia. Proyek kami tersebar di Kediri, Nganjuk, Madura, Jawa Tengah, hingga Jakarta.';
 
-export default function AreaLayananPage() {
+export async function generateMetadata() {
+  const o = await pageOverride(PATH);
+  return buildMetadata({
+    title: o.title || DEFAULT_TITLE,
+    description: o.description || DEFAULT_DESC,
+    path: PATH,
+    noindex: o.noindex,
+    ogImage: o.ogImage ?? undefined,
+  });
+}
+
+export default async function AreaLayananPage() {
+  const o = await pageOverride(PATH);
   const crumbs = [
     { name: 'Beranda', path: '/' },
     { name: 'Area Layanan', path: PATH },
@@ -30,10 +40,10 @@ export default function AreaLayananPage() {
         <div className="max-w-3xl">
           <p className="eyebrow">Area Layanan</p>
           <h1 className="mt-3 text-[1.8rem] leading-tight sm:text-4xl">
-            Area Layanan Jasa Epoxy Lantai Jayati Epoxy
+            {o.h1 || 'Area Layanan Jasa Epoxy Lantai Jayati Epoxy'}
           </h1>
           <div className="mt-6">
-            <AnswerBox>
+            <AnswerBox override={o.intro}>
               <p>
                 {site.legalName} berkantor di Kediri, Jawa Timur, dan melayani pekerjaan epoxy
                 lantai di seluruh Indonesia. Proyek kami tercatat di Kediri, Nganjuk, Sampang,

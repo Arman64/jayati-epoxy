@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { buildMetadata, breadcrumbSchema } from '@/lib/seo';
+import { pageOverride } from '@/lib/pages';
 import { JsonLd } from '@/components/JsonLd';
 import { AnswerBox, Breadcrumbs, CheckList, CtaBand, Disclaimer, SectionHead } from '@/components/Sections';
 import { site } from '@/lib/site';
@@ -8,12 +9,20 @@ import { workSteps, companyValues, missionStatements, visionStatement, clientCou
 
 const PATH = '/tentang-kami';
 
-export const metadata = buildMetadata({
-  title: 'Tentang Kami — Jayati Epoxy',
-  description:
-    'Jayati Epoxy adalah kontraktor dan aplikator epoxy lantai di bawah Semesta Bumi Jayati. Kami mengutamakan persiapan permukaan yang benar dan penawaran yang transparan.',
-  path: PATH,
-});
+const DEFAULT_TITLE = 'Tentang Kami — Jayati Epoxy';
+const DEFAULT_DESC =
+  'Jayati Epoxy adalah kontraktor dan aplikator epoxy lantai di bawah Semesta Bumi Jayati. Kami mengutamakan persiapan permukaan yang benar dan penawaran yang transparan.';
+
+export async function generateMetadata() {
+  const o = await pageOverride(PATH);
+  return buildMetadata({
+    title: o.title || DEFAULT_TITLE,
+    description: o.description || DEFAULT_DESC,
+    path: PATH,
+    noindex: o.noindex,
+    ogImage: o.ogImage ?? undefined,
+  });
+}
 
 const principles = [
   {
@@ -34,7 +43,8 @@ const principles = [
   },
 ];
 
-export default function TentangPage() {
+export default async function TentangPage() {
+  const o = await pageOverride(PATH);
   const crumbs = [
     { name: 'Beranda', path: '/' },
     { name: 'Tentang Kami', path: PATH },
@@ -50,10 +60,10 @@ export default function TentangPage() {
           <div>
             <p className="eyebrow">Tentang Kami</p>
             <h1 className="mt-3 text-[1.8rem] leading-tight sm:text-4xl">
-              Kontraktor Epoxy Lantai di Bawah {site.legalName}
+              {o.h1 || `Kontraktor Epoxy Lantai di Bawah ${site.legalName}`}
             </h1>
             <div className="mt-6">
-              <AnswerBox>
+              <AnswerBox override={o.intro}>
                 <p>
                   {site.legalName} menyediakan solusi konstruksi industri yang mengutamakan
                   kualitas, keamanan, dan standar higienitas. Kami bekerja sebagai kontraktor

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { buildMetadata, breadcrumbSchema, faqSchema, serviceSchema } from '@/lib/seo';
+import { pageOverride } from '@/lib/pages';
 import { JsonLd } from '@/components/JsonLd';
 import {
   AnswerBox,
@@ -19,12 +20,20 @@ import { TrackedLink } from '@/components/TrackedLink';
 
 const PATH = '/epoxy-lantai-industri';
 
-export const metadata = buildMetadata({
-  title: 'Epoxy Lantai Industri — Pabrik, Gudang & Heavy Duty',
-  description:
-    'Jasa epoxy lantai industri untuk pabrik, gudang, workshop, dan area food grade. Sistem heavy duty, persiapan permukaan mekanis, dan pengerjaan bertahap tanpa menghentikan operasional.',
-  path: PATH,
-});
+const DEFAULT_TITLE = 'Epoxy Lantai Industri — Pabrik, Gudang & Heavy Duty';
+const DEFAULT_DESC =
+  'Jasa epoxy lantai industri untuk pabrik, gudang, workshop, dan area food grade. Sistem heavy duty, persiapan permukaan mekanis, dan pengerjaan bertahap tanpa menghentikan operasional.';
+
+export async function generateMetadata() {
+  const o = await pageOverride(PATH);
+  return buildMetadata({
+    title: o.title || DEFAULT_TITLE,
+    description: o.description || DEFAULT_DESC,
+    path: PATH,
+    noindex: o.noindex,
+    ogImage: o.ogImage ?? undefined,
+  });
+}
 
 /** Rekomendasi mengikuti katalog ketebalan resmi (1.000–9.000 micron). */
 const loadTypes = [
@@ -63,7 +72,8 @@ const industryFaqs = [
   },
 ];
 
-export default function IndustriPage() {
+export default async function IndustriPage() {
+  const o = await pageOverride(PATH);
   const crumbs = [
     { name: 'Beranda', path: '/' },
     { name: 'Epoxy Lantai Industri', path: PATH },
@@ -90,10 +100,10 @@ export default function IndustriPage() {
           <div>
             <p className="eyebrow">Epoxy Industri</p>
             <h1 className="mt-3 text-[1.8rem] leading-tight sm:text-4xl">
-              Epoxy Lantai Industri untuk Pabrik, Gudang, dan Area Heavy Duty
+              {o.h1 || 'Epoxy Lantai Industri untuk Pabrik, Gudang, dan Area Heavy Duty'}
             </h1>
             <div className="mt-6">
-              <AnswerBox>
+              <AnswerBox override={o.intro}>
                 <p>
                   Epoxy lantai industri adalah sistem pelapisan lantai beton yang dirancang menahan
                   beban forklift, benturan, dan paparan bahan kimia. Ketebalan berkisar dari 300

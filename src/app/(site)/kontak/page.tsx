@@ -1,4 +1,5 @@
 import { buildMetadata, breadcrumbSchema } from '@/lib/seo';
+import { pageOverride } from '@/lib/pages';
 import { JsonLd } from '@/components/JsonLd';
 import { Breadcrumbs, SectionHead } from '@/components/Sections';
 import { QuotationForm } from '@/components/QuotationForm';
@@ -8,14 +9,23 @@ import { TrackedLink } from '@/components/TrackedLink';
 
 const PATH = '/kontak';
 
-export const metadata = buildMetadata({
-  title: 'Kontak & Minta Penawaran Epoxy Lantai',
-  description:
-    'Hubungi Jayati Epoxy untuk konsultasi dan permintaan penawaran jasa epoxy lantai. Kirim detail area melalui formulir, WhatsApp, atau telepon.',
-  path: PATH,
-});
+const DEFAULT_TITLE = 'Kontak & Minta Penawaran Epoxy Lantai';
+const DEFAULT_DESC =
+  'Hubungi Jayati Epoxy untuk konsultasi dan permintaan penawaran jasa epoxy lantai. Kirim detail area melalui formulir, WhatsApp, atau telepon.';
 
-export default function KontakPage() {
+export async function generateMetadata() {
+  const o = await pageOverride(PATH);
+  return buildMetadata({
+    title: o.title || DEFAULT_TITLE,
+    description: o.description || DEFAULT_DESC,
+    path: PATH,
+    noindex: o.noindex,
+    ogImage: o.ogImage ?? undefined,
+  });
+}
+
+export default async function KontakPage() {
+  const o = await pageOverride(PATH);
   const crumbs = [
     { name: 'Beranda', path: '/' },
     { name: 'Kontak', path: PATH },
@@ -29,7 +39,7 @@ export default function KontakPage() {
       <section className="container-page py-10 sm:py-14">
         <SectionHead
           eyebrow="Kontak"
-          title="Minta Penawaran atau Jadwalkan Survei"
+          title={o.h1 || 'Minta Penawaran atau Jadwalkan Survei'}
           lead="Sampaikan kebutuhan Anda melalui formulir agar kami dapat menyiapkan estimasi awal. Untuk pertanyaan cepat, WhatsApp adalah jalur tercepat."
           as="h1"
         />

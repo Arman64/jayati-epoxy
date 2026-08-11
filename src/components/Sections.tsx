@@ -63,13 +63,20 @@ export function SectionHead({
 }
 
 /** Jawaban langsung 40–60 kata di awal — PRD §5.2 & §12 (answer-first) */
-export function AnswerBox({ children }: { children: ReactNode }) {
+export function AnswerBox({
+  children,
+  override,
+}: {
+  children: ReactNode;
+  /** Teks pembuka dari CMS. Bila diisi, menggantikan teks bawaan. */
+  override?: string | null;
+}) {
   return (
     <div className="answer-box">
       <p className="mb-1.5 text-xs font-bold uppercase tracking-widest text-forest-700">
         Jawaban singkat
       </p>
-      {children}
+      {override ? <p>{override}</p> : children}
     </div>
   );
 }

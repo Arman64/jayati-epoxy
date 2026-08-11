@@ -1,16 +1,25 @@
 import { buildMetadata, breadcrumbSchema } from '@/lib/seo';
+import { pageOverride } from '@/lib/pages';
 import { JsonLd } from '@/components/JsonLd';
 import { Breadcrumbs, Disclaimer } from '@/components/Sections';
 import { site } from '@/lib/site';
 
 const PATH = '/terms';
 
-export const metadata = buildMetadata({
-  title: 'Syarat & Ketentuan',
-  description:
-    'Syarat dan ketentuan penggunaan situs Jayati Epoxy serta ketentuan umum terkait estimasi, penawaran, dan pelaksanaan pekerjaan epoxy lantai.',
-  path: PATH,
-});
+const DEFAULT_TITLE = 'Syarat & Ketentuan';
+const DEFAULT_DESC =
+  'Syarat dan ketentuan penggunaan situs Jayati Epoxy serta ketentuan umum terkait estimasi, penawaran, dan pelaksanaan pekerjaan epoxy lantai.';
+
+export async function generateMetadata() {
+  const o = await pageOverride(PATH);
+  return buildMetadata({
+    title: o.title || DEFAULT_TITLE,
+    description: o.description || DEFAULT_DESC,
+    path: PATH,
+    noindex: o.noindex,
+    ogImage: o.ogImage ?? undefined,
+  });
+}
 
 const sections = [
   {
@@ -53,7 +62,8 @@ const sections = [
   },
 ];
 
-export default function TermsPage() {
+export default async function TermsPage() {
+  const o = await pageOverride(PATH);
   const crumbs = [
     { name: 'Beranda', path: '/' },
     { name: 'Syarat & Ketentuan', path: PATH },
@@ -65,7 +75,7 @@ export default function TermsPage() {
       <Breadcrumbs items={crumbs} />
       <article className="container-page py-10 sm:py-14">
         <div className="mx-auto max-w-3xl">
-          <h1 className="text-[1.8rem] leading-tight sm:text-4xl">Syarat & Ketentuan</h1>
+          <h1 className="text-[1.8rem] leading-tight sm:text-4xl">{o.h1 || 'Syarat & Ketentuan'}</h1>
           <p className="mt-3 text-[13px] text-slate-500">Terakhir diperbarui: {site.priceLastReviewed}</p>
           <div className="mt-8 space-y-8">
             {sections.map((s) => (
