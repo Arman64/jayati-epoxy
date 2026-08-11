@@ -15,11 +15,16 @@ export function LoginForm({ nextPath }: { nextPath?: string }) {
     setBusy(true);
     setError(null);
 
+    // Batas waktu: tanpa ini, server yang mati membuat tombol berputar selamanya.
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 15000);
+
     try {
       const res = await fetch('/api/admin/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
+        signal: ctrl.signal,
       });
       const data = (await res.json()) as { ok: boolean; error?: string };
 
@@ -32,9 +37,15 @@ export function LoginForm({ nextPath }: { nextPath?: string }) {
       // refresh() memastikan server component membaca cookie sesi yang baru.
       router.replace(nextPath && nextPath.startsWith('/admin') ? nextPath : '/admin');
       router.refresh();
-    } catch {
-      setError('Tidak dapat menghubungi server. Periksa koneksi Anda.');
+    } catch (err) {
+      setError(
+        (err as Error)?.name === 'AbortError'
+          ? 'Server tidak merespons. Pastikan server berjalan, lalu coba lagi.'
+          : 'Tidak dapat menghubungi server. Periksa koneksi Anda.',
+      );
       setBusy(false);
+    } finally {
+      clearTimeout(timer);
     }
   }
 
