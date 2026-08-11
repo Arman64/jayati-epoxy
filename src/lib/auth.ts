@@ -129,3 +129,28 @@ export function safeEqual(a: string, b: string): boolean {
   if (ba.length !== bb.length) return false;
   return timingSafeEqual(ba, bb);
 }
+
+/**
+ * Mendeteksi apakah kata sandi demo dari ADMIN.md masih terpasang.
+ * Kata sandi tersebut tertulis di repositori, jadi harus dianggap bocor.
+ * Dipakai untuk memunculkan peringatan di dasbor, bukan untuk memblokir login
+ * agar pemilik tidak terkunci dari panelnya sendiri.
+ */
+export async function demoCredentialsInUse(): Promise<string[]> {
+  const demo: Array<[string, string]> = [
+    ['owner@jayatiepoxy.id', 'JayatiDemo2026!'],
+    ['staff@jayatiepoxy.id', 'StafDemo2026!'],
+  ];
+
+  const found: string[] = [];
+  for (const [email, password] of demo) {
+    try {
+      const row = await queryOne('SELECT password_hash FROM users WHERE email = $1', [email]);
+      if (!row) continue;
+      if (await verifyPassword(password, String(row.password_hash))) found.push(email);
+    } catch {
+      // Basis data tidak siap — jangan sampai dasbor ikut gagal.
+    }
+  }
+  return found;
+}

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { requireUser } from '@/lib/auth';
+import { demoCredentialsInUse, requireUser } from '@/lib/auth';
 import { countByStatus, dashboardStats, listLeads, STATUS_LABEL, LEAD_STATUSES } from '@/lib/leads';
 import { AdminShell } from './AdminShell';
 import { StatusBadge, formatDateTime, formatRupiahShort } from './ui';
@@ -8,10 +8,11 @@ export const dynamic = 'force-dynamic';
 
 export default async function AdminDashboard() {
   const user = await requireUser();
-  const [counts, stats, recent] = await Promise.all([
+  const [counts, stats, recent, demoAccounts] = await Promise.all([
     countByStatus(),
     dashboardStats(),
     listLeads({ perPage: 8 }),
+    demoCredentialsInUse(),
   ]);
 
   const cards = [
@@ -33,6 +34,24 @@ export default async function AdminDashboard() {
       <p className="mt-1 text-sm text-slate-600">
         Ringkasan prospek masuk. Total {counts.total} prospek tercatat.
       </p>
+
+      {/* Kata sandi demo tertulis di ADMIN.md, jadi harus dianggap sudah bocor. */}
+      {demoAccounts.length ? (
+        <div
+          role="alert"
+          className="mt-5 rounded-xl border border-red-300 bg-red-50 p-4 text-[14px] leading-relaxed text-red-900"
+        >
+          <p className="font-bold">Kata sandi demo masih aktif — ganti sebelum situs online.</p>
+          <p className="mt-1.5">
+            Akun {demoAccounts.join(' dan ')} masih memakai kata sandi contoh yang tertulis di
+            berkas <code className="rounded bg-white px-1">ADMIN.md</code>, sehingga siapa pun yang
+            membaca berkas itu bisa masuk. Ganti lewat perintah:
+          </p>
+          <pre className="mt-2 overflow-x-auto rounded-lg bg-white p-3 text-[12px] text-navy-900">
+{`npm run db:seed -- ${demoAccounts[0]} "Nama Anda" "KataSandiBaruYangPanjang" owner`}
+          </pre>
+        </div>
+      ) : null}
 
       <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {cards.map((c) => (

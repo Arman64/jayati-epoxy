@@ -1,7 +1,10 @@
 # Status Data & Sisa Item untuk Owner
 
 > Diperbarui 11 Agustus 2026, setelah **Company Profile CV Semesta Bumi Jayati**
-> dan 23 foto proyek asli diterima.
+> dan 23 foto proyek asli diterima, serta setelah CMS lengkap terpasang.
+
+> **Sejak CMS terpasang, sebagian besar item di bawah dapat Anda ubah sendiri
+> lewat panel admin tanpa menyentuh kode** — lihat kolom "Diubah di mana".
 
 Status: ✅ sudah bersumber dokumen resmi · ⬜ masih perlu keputusan Owner
 
@@ -116,7 +119,7 @@ kutipan, dan izin publikasi. Struktur `testimonials` di `content.ts` sudah siap.
 
 ---
 
-## 6. Layanan Non-Epoxy — ⬜ OPSIONAL
+## 6. Layanan Non-Epoxy — ⬜ OPSIONAL — kini bisa dibuatkan halaman sendiri
 
 Company profile memuat tiga layanan yang belum punya halaman sendiri:
 
@@ -128,9 +131,35 @@ Saat ini hanya tampil sebagai kartu di beranda dan mengarah ke
 `/jasa-epoxy-lantai`. Bila layanan ini ingin mendatangkan lead sendiri,
 masing-masing sebaiknya punya halaman terpisah.
 
+**Kini Anda bisa membuatnya sendiri**: buka `/admin/halaman` → **+ Halaman
+baru** → susun seksinya → **Terbitkan**. Contoh yang sudah jadi ada di
+`/epoxy-lantai-gudang`. Setelah halamannya terbit, ubah tautan kartu layanan
+di `/admin/konten` → **Layanan Utama** → kolom **href** agar mengarah ke sana.
+
 ---
 
-## 7. Yang Sengaja Tidak Dipasang
+## 7. Yang bisa Anda ubah sendiri di panel admin
+
+| Ingin mengubah | Buka menu |
+|---|---|
+| Harga per m², nama & ketebalan sistem | Konten → Sistem Epoxy |
+| Pertanyaan FAQ | Konten → FAQ Umum / FAQ Harga |
+| Tahapan pengerjaan, alasan memilih kami | Konten → koleksi terkait |
+| Kartu layanan di beranda dan tautannya | Konten → Layanan Utama |
+| Daftar kota | Konten → Kota |
+| Judul & deskripsi Google tiap halaman | Halaman → pilih halaman |
+| Membuat halaman baru | Halaman → + Halaman baru |
+| Nomor telepon, alamat, jam buka | Pengaturan → Kontak & Alamat |
+| Tombol WhatsApp & telepon mengambang | Pengaturan → Tombol CTA |
+| Menulis dan menerbitkan artikel | Blog |
+
+Perubahan harga di menu Konten otomatis merambat ke beranda, halaman harga,
+kalkulator, landing page iklan, dan halaman kota sekaligus — tidak perlu
+mengedit satu per satu.
+
+---
+
+## 8. Yang Sengaja Tidak Dipasang
 
 Agar tidak ada klaim tanpa sumber:
 
