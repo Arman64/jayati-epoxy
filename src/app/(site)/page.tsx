@@ -194,9 +194,9 @@ export default async function HomePage() {
 
       {/* ------------------------------------------------- ANSWER-FIRST */}
       <section className="container-page py-14 sm:py-16">
-        <div className="grid gap-8 lg:grid-cols-[1.1fr_.9fr] lg:items-start">
+        <SectionHead {...sh(copy, 'ringkasan', { eyebrow: 'Ringkasan', title: 'Apa itu jasa epoxy lantai?' })} as="h2" />
+        <div className="mt-8 grid gap-8 lg:grid-cols-[1.1fr_.9fr] lg:items-start">
           <div>
-            <SectionHead {...sh(copy, 'ringkasan', { eyebrow: 'Ringkasan', title: 'Apa itu jasa epoxy lantai?' })} as="h2" />
             <AnswerBox override={o.intro}>
               <p>
                 Epoxy flooring adalah sistem pelapisan lantai yang dirancang untuk meningkatkan
