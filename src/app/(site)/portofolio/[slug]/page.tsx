@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { buildMetadata, breadcrumbSchema } from '@/lib/seo';
 import { JsonLd } from '@/components/JsonLd';
+import { PhotoCarousel } from '@/components/PhotoCarousel';
 import { Breadcrumbs, CtaBand, Disclaimer, ProjectPhoto, SectionHead } from '@/components/Sections';
 import { getProjects } from '@/lib/content-db';
 import { IconArrow, IconCheck } from '@/components/Icons';
@@ -44,8 +45,6 @@ export default async function ProjectPage({ params }: Props) {
     { name: project.name, path: `/portofolio/${project.slug}` },
   ];
 
-  const hero = project.photos[0]!;
-  const rest = project.photos.slice(1);
 
   return (
     <>
@@ -61,8 +60,8 @@ export default async function ProjectPage({ params }: Props) {
           <p className="prose-brand mt-4 max-w-2xl">{project.summary}</p>
 
           <div className="mt-8">
-            <ProjectPhoto
-              photo={hero}
+            <PhotoCarousel
+              photos={project.photos}
               ratio="aspect-[16/10]"
               priority
               sizes="(min-width: 1180px) 1100px, 100vw"
@@ -132,17 +131,6 @@ export default async function ProjectPage({ params }: Props) {
             </aside>
           </div>
         </section>
-
-        {rest.length > 0 && (
-          <section className="container-page pb-14">
-            <SectionHead eyebrow="Dokumentasi" title="Foto pengerjaan lainnya" as="h2" />
-            <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {rest.map((photo) => (
-                <ProjectPhoto key={photo.src} photo={photo} ratio="aspect-[4/3]" />
-              ))}
-            </div>
-          </section>
-        )}
 
         {others.length > 0 && (
           <section className="bg-cream-100 py-14">

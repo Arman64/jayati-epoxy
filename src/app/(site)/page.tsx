@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { buildMetadata, breadcrumbSchema, faqSchema } from '@/lib/seo';
 import { pageOverride } from '@/lib/pages';
@@ -32,6 +31,7 @@ import { defaultWaMessage, site, waLink } from '@/lib/site';
 import { TrackedLink } from '@/components/TrackedLink';
 import { getPageCopy } from '@/lib/page-copy';
 import { getProjects } from '@/lib/content-db';
+import { HeroCarousel } from '@/components/HeroCarousel';
 import { sh } from '@/lib/page-slots';
 
 const PATH = '/';
@@ -76,8 +76,26 @@ export default async function HomePage() {
 
   const trustPoints = stats.length ? stats : fallbackTrustPoints;
   const breadcrumb = breadcrumbSchema([{ name: 'Beranda', path: '/' }]);
-  const heroProject = projects[0]!;
-  const heroPhoto = heroProject.photos[0]!;
+  /**
+   * Hero menampilkan dokumentasi dari SEMUA proyek yang tayang, bukan satu foto.
+   * Diambil foto utama tiap proyek supaya yang tampil beragam (bukan 4 foto dari
+   * proyek yang sama), lalu dibatasi 8 slide agar hero tidak memuat puluhan
+   * gambar sekaligus — PRD §11 soal bobot halaman.
+   */
+  const heroSlides = projects
+    .filter((p) => p.photos.length > 0)
+    .slice(0, 8)
+    .map((p) => {
+      const photo = p.photos[0]!;
+      return {
+        src: photo.src,
+        alt: photo.alt,
+        width: photo.width,
+        height: photo.height,
+        projectName: p.name,
+        href: `/portofolio/${p.slug}`,
+      };
+    });
 
   return (
     <>
@@ -153,22 +171,7 @@ export default async function HomePage() {
 
           {/* Hero visual: foto asli dokumentasi proyek — PRD §5.1 */}
           <div className="relative">
-            <div className="rounded-3xl border border-white/15 bg-white/[.07] p-3 shadow-lift backdrop-blur-sm">
-              <div className="aspect-[4/3] w-full overflow-hidden rounded-2xl bg-navy-800/40">
-                <Image
-                  src={heroPhoto.src}
-                  alt={heroPhoto.alt}
-                  width={heroPhoto.width}
-                  height={heroPhoto.height}
-                  priority
-                  sizes="(min-width: 1024px) 540px, 100vw"
-                  className="h-full w-full object-cover"
-                />
-              </div>
-              <figcaption className="px-1 pb-0.5 pt-2.5 text-[11px] leading-snug text-white/55">
-                Dokumentasi pengerjaan {site.legalName} — {heroProject.name}.
-              </figcaption>
-            </div>
+            <HeroCarousel slides={heroSlides} legalName={site.legalName} />
           </div>
         </div>
 
