@@ -143,6 +143,30 @@ async function purgeTest() {
       RETURNING id`,
   );
   console.log(`✓ ${res.rowCount} lead uji coba dihapus.`);
+
+  // Akun yang dibuat suite pengujian (admincheck membuat pengguna baru tiap
+  // kali jalan). Akun owner/staff asli tidak tersentuh karena polanya khusus.
+  const users = await pool.query(
+    `DELETE FROM users
+      WHERE email ~ '^tes[0-9]+@jayatiepoxy\\.id$'
+      RETURNING id`,
+  );
+  console.log(`✓ ${users.rowCount} akun uji coba dihapus.`);
+
+  // Teks & gambar yang mungkin tertinggal dari uji CMS.
+  const copy = await pool.query(
+    `DELETE FROM page_copy WHERE title ILIKE '%uji%' OR title ILIKE '%percobaan%' RETURNING id`,
+  );
+  const media = await pool.query(
+    `DELETE FROM media WHERE alt ILIKE 'Foto uji%' RETURNING id`,
+  );
+  // Sesi kedaluwarsa hanya menumpuk tanpa guna.
+  const sess = await pool.query('DELETE FROM sessions WHERE expires_at < now() RETURNING id');
+  if (sess.rowCount) console.log(`✓ ${sess.rowCount} sesi kedaluwarsa dihapus.`);
+
+  if (copy.rowCount || media.rowCount) {
+    console.log(`✓ ${copy.rowCount} teks uji & ${media.rowCount} gambar uji dihapus.`);
+  }
 }
 
 const table = {

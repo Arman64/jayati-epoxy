@@ -16,6 +16,9 @@ npm start        # jalankan hasil build
 npm run typecheck
 ```
 
+> **Akan dipakai sungguhan?** Baca **SEBELUM-RILIS.md** lebih dulu — ada tiga
+> langkah wajib, termasuk mengganti kata sandi demo dan membersihkan data uji.
+
 ---
 
 ## Warna Brand
@@ -170,7 +173,28 @@ Uji otomatis: `node ../admincheck.mjs` — **64 pengecekan** meliputi proteksi
 tanpa login, cookie palsu, pembatasan peran, validasi input, percobaan SQL
 injection, dan ekspor CSV.
 
-## Belum Termasuk (fase berikutnya)
+## Dokumentasi
 
-Phase 5 (MCP content workflow) belum dibangun. Notifikasi email/WhatsApp saat
-lead masuk juga belum ada — saat ini lead hanya tersimpan di database.
+| Berkas | Isi |
+|---|---|
+| **SEBELUM-RILIS.md** | Daftar periksa wajib sebelum website dipakai sungguhan |
+| **CMS.md** | Panduan Owner: mengatur halaman, teks, foto, blog, otomasi |
+| **ADMIN.md** | Akun, peran, dan perintah database |
+| **KONTEN-YANG-HARUS-DIISI.md** | Bahan yang masih perlu dilengkapi perusahaan |
+
+---
+
+## Sudah Termasuk
+
+Phase 2 (website publik), Phase 3 (panel admin + CRM), Phase 4 (landing page
+iklan + pelacakan), Phase 5 (CMS lengkap + alur konten MCP), Phase 6 (konten
+terstruktur + penyusun halaman), dan Phase 7 (CMS halaman terpadu: teks tiap
+bagian bisa diubah, foto bisa diganti lewat admin).
+
+## Belum Termasuk
+
+Notifikasi email/WhatsApp saat lead masuk belum ada — lead tersimpan di
+database dan tampil di panel admin, tapi tidak ada pemberitahuan otomatis.
+
+Integrasi Google Search Console belum tersambung; fitur laporan performa di
+menu Otomasi menjawab `connected: false` sampai kredensialnya diisi.
