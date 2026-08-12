@@ -4,7 +4,7 @@ import { requireOwner } from '@/lib/auth';
 import { getPageRow, listSections } from '@/lib/page-sections';
 import { getPage } from '@/lib/pages';
 import { listCopy, listPageImages } from '@/lib/page-copy';
-import { slotsFor } from '@/lib/page-slots';
+import { slotsFor, seoDefaults } from '@/lib/page-slots';
 import { AdminShell } from '../../AdminShell';
 import { PageBuilder } from '../PageBuilder';
 import { CopyEditor } from '../CopyEditor';
@@ -103,7 +103,7 @@ export default async function PageEditorRoute({
           />
         )
       ) : setting ? (
-        <SeoEditor page={setting} />
+        <SeoEditor page={setting} defaults={seoDefaults(page.path)} />
       ) : (
         <p className="mt-4 text-sm text-slate-600">Pengaturan SEO halaman ini belum tersedia.</p>
       )}

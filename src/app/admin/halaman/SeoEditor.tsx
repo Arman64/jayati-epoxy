@@ -7,6 +7,13 @@ import type { PageSetting } from '@/lib/pages';
 const field =
   'w-full rounded-lg border border-navy-900/15 bg-white px-3 py-2.5 text-sm outline-none focus:border-leaf-500 focus:ring-2 focus:ring-leaf-500/30';
 
+/** Kirim string kosong bila nilainya masih sama dengan bawaan kode. */
+function same(value: string | null | undefined, fallback: string | undefined): string {
+  const v = (value ?? '').trim();
+  if (fallback !== undefined && v === fallback.trim()) return '';
+  return v;
+}
+
 function counter(v: string, min: number, max: number) {
   const n = v.length;
   const bad = n > 0 && (n < min || n > max);
@@ -22,13 +29,28 @@ function counter(v: string, min: number, max: number) {
  * gambar OG, dan perilaku indeks. Kolom kosong berarti memakai nilai bawaan
  * yang ditulis di kode halaman.
  */
-export function SeoEditor({ page }: { page: PageSetting }) {
+export function SeoEditor({
+  page,
+  defaults,
+}: {
+  page: PageSetting;
+  /** Nilai bawaan yang tertulis di kode halaman. */
+  defaults?: { title: string; description: string; h1: string };
+}) {
   const router = useRouter();
   const [draft, setDraft] = useState<Partial<PageSetting>>({});
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ kind: 'ok' | 'err'; text: string } | null>(null);
 
-  const cur = { ...page, ...draft };
+  // Kolom diisi nilai yang sedang tampil: simpanan Owner bila ada, kalau
+  // belum ada pakai teks bawaan dari kode. Owner jadi mengedit teks nyata.
+  const cur = {
+    ...page,
+    title: page.title ?? defaults?.title ?? '',
+    description: page.description ?? defaults?.description ?? '',
+    h1: page.h1 ?? defaults?.h1 ?? '',
+    ...draft,
+  };
 
   function set(changes: Partial<PageSetting>) {
     setDraft((d) => ({ ...d, ...changes }));
@@ -43,9 +65,12 @@ export function SeoEditor({ page }: { page: PageSetting }) {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          title: cur.title ?? '',
-          description: cur.description ?? '',
-          h1: cur.h1 ?? '',
+          // Nilai yang masih persis sama dengan bawaan dikirim kosong, supaya
+          // tersimpan sebagai NULL dan halaman tetap mengikuti teks kode bila
+          // sewaktu-waktu diperbarui — bukan membekukan salinannya.
+          title: same(cur.title, defaults?.title),
+          description: same(cur.description, defaults?.description),
+          h1: same(cur.h1, defaults?.h1),
           intro: cur.intro ?? '',
           ogImage: cur.ogImage ?? '',
           noindex: cur.noindex,
@@ -69,6 +94,11 @@ export function SeoEditor({ page }: { page: PageSetting }) {
 
   return (
     <section className="mt-4 rounded-2xl border border-navy-900/10 bg-white p-5 shadow-card">
+      <p className="mb-4 rounded-xl border border-navy-900/12 bg-cream-200/60 p-3 text-sm text-slate-700">
+        Kolom di bawah sudah terisi teks yang <strong>sedang tampil</strong> di halaman. Kosongkan
+        sebuah kolom bila ingin mengembalikannya ke teks bawaan.
+      </p>
+
       {msg ? (
         <p
           role="status"
@@ -94,7 +124,7 @@ export function SeoEditor({ page }: { page: PageSetting }) {
             id="p-title"
             value={cur.title ?? ''}
             onChange={(e) => set({ title: e.target.value })}
-            placeholder="Kosongkan untuk memakai judul bawaan halaman"
+            placeholder={defaults?.title ?? "Kosongkan untuk memakai judul bawaan halaman"}
             className={field}
           />
         </div>
@@ -111,7 +141,7 @@ export function SeoEditor({ page }: { page: PageSetting }) {
             rows={3}
             value={cur.description ?? ''}
             onChange={(e) => set({ description: e.target.value })}
-            placeholder="Kosongkan untuk memakai deskripsi bawaan"
+            placeholder={defaults?.description ?? "Kosongkan untuk memakai deskripsi bawaan"}
             className={field}
           />
         </div>
@@ -124,7 +154,7 @@ export function SeoEditor({ page }: { page: PageSetting }) {
             id="p-h1"
             value={cur.h1 ?? ''}
             onChange={(e) => set({ h1: e.target.value })}
-            placeholder="Kosongkan untuk memakai H1 bawaan"
+            placeholder={defaults?.h1 ?? "Kosongkan untuk memakai H1 bawaan"}
             className={field}
           />
         </div>

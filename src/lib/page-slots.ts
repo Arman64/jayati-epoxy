@@ -13,6 +13,9 @@
  * Tanpa `server-only`: dipakai juga oleh komponen admin di sisi klien.
  */
 
+import { site } from '@/lib/site';
+import { clientCount } from '@/lib/content';
+
 export type SlotDef = {
   slot: string;
   /** Nama bagian dalam bahasa manusia, tampil di admin. */
@@ -35,6 +38,12 @@ export type SlotDef = {
 export type PageSlots = {
   path: string;
   label: string;
+  /**
+   * Nilai bawaan SEO yang tertulis di kode halaman. Dipakai admin untuk
+   * mengisi kolom SEO dengan teks yang sedang benar-benar tampil, bukan
+   * membiarkannya kosong.
+   */
+  seo?: { title: string; description: string; h1: string };
   slots: SlotDef[];
 };
 
@@ -42,6 +51,11 @@ export const PAGE_SLOTS: PageSlots[] = [
   {
     path: '/',
     label: 'Beranda',
+    seo: {
+      title: 'Jasa Epoxy Lantai Industri & Dapur SPPG — CV Semesta Bumi Jayati',
+      description: 'Kontraktor epoxy lantai untuk dapur SPPG, pabrik, clean room, dan cold storage. Self-leveling dan PU Crete 1.000–9.000 micron, material standar ISO 9001. Melayani seluruh Indonesia.',
+      h1: 'Jasa Epoxy Lantai Industri, Dapur SPPG, dan Clean Room',
+    },
     slots: [
       {
         slot: 'ringkasan',
@@ -73,7 +87,7 @@ export const PAGE_SLOTS: PageSlots[] = [
         slot: 'mengapa-kami',
         label: 'Mengapa Kami',
         defaultEyebrow: 'Mengapa Kami',
-        defaultTitle: '(dari data: `Mengapa memilih ${site.legalName}?`)',
+        defaultTitle: `Mengapa memilih ${site.legalName}?`,
         defaultLead: 'Lima hal yang menjadi komitmen kerja kami, sebagaimana tercantum dalam company profile perusahaan.',
       },
       {
@@ -88,6 +102,11 @@ export const PAGE_SLOTS: PageSlots[] = [
   {
     path: '/jasa-epoxy-lantai',
     label: 'Jasa Epoxy Lantai',
+    seo: {
+      title: 'Jasa Epoxy Lantai — Kontraktor & Aplikator Profesional',
+      description: 'Jasa epoxy lantai oleh kontraktor dan aplikator berpengalaman. Survei lokasi, persiapan permukaan, sistem Self-Leveling hingga PU Crete 9.000 micron. Penawaran tertulis.',
+      h1: 'Jasa Epoxy Lantai oleh Kontraktor & Aplikator Profesional',
+    },
     slots: [
       {
         slot: 'jenis-sistem',
@@ -127,6 +146,11 @@ export const PAGE_SLOTS: PageSlots[] = [
   {
     path: '/harga-epoxy-lantai',
     label: 'Harga Epoxy Lantai',
+    seo: {
+      title: 'Harga Epoxy Lantai per m2 — Pricelist Resmi',
+      description: 'Pricelist resmi epoxy lantai per m2: Self-Leveling 1.000–2.000 micron dan PU Crete 3.000–9.000 micron. Harga turun untuk area di atas 100 m2 dan di atas 500 m2.',
+      h1: 'Harga Epoxy Lantai per m² dan Faktor yang Memengaruhinya',
+    },
     slots: [
       {
         slot: 'pricelist-resmi',
@@ -160,6 +184,11 @@ export const PAGE_SLOTS: PageSlots[] = [
   {
     path: '/epoxy-lantai-rumah',
     label: 'Epoxy Lantai Rumah',
+    seo: {
+      title: 'Epoxy Lantai Rumah — Garasi, Kamar Mandi & Keramik',
+      description: 'Jasa epoxy lantai rumah untuk garasi, carport, kamar mandi, dapur, dan lantai keramik lama. Permukaan tanpa nat, mudah dibersihkan, dikerjakan aplikator berpengalaman.',
+      h1: 'Epoxy Lantai Rumah untuk Garasi, Kamar Mandi, dan Keramik Lama',
+    },
     slots: [
       {
         slot: 'hero-foto',
@@ -207,6 +236,11 @@ export const PAGE_SLOTS: PageSlots[] = [
   {
     path: '/epoxy-lantai-industri',
     label: 'Epoxy Lantai Industri',
+    seo: {
+      title: 'Epoxy Lantai Industri — Pabrik, Gudang & Heavy Duty',
+      description: 'Jasa epoxy lantai industri untuk pabrik, gudang, workshop, dan area food grade. Sistem heavy duty, persiapan permukaan mekanis, dan pengerjaan bertahap tanpa menghentikan operasional.',
+      h1: 'Epoxy Lantai Industri untuk Pabrik, Gudang, dan Area Heavy Duty',
+    },
     slots: [
       {
         slot: 'pemilihan-sistem',
@@ -245,6 +279,11 @@ export const PAGE_SLOTS: PageSlots[] = [
   {
     path: '/epoxy-floor-coating',
     label: 'Epoxy Floor Coating',
+    seo: {
+      title: 'Epoxy Floor Coating — Pelapis Lantai Beton Pelindung',
+      description: 'Epoxy floor coating untuk melindungi lantai beton dari debu, abrasi, dan tumpahan. Cocok untuk gudang, area komersial, dan ruang produksi. Aplikasi roll berlapis oleh aplikator.',
+      h1: 'Epoxy Floor Coating untuk Melindungi Lantai Beton',
+    },
     slots: [
       {
         slot: 'hero-foto',
@@ -284,12 +323,17 @@ export const PAGE_SLOTS: PageSlots[] = [
   {
     path: '/portofolio',
     label: 'Portofolio',
+    seo: {
+      title: 'Portofolio Proyek Epoxy Lantai',
+      description: 'Dokumentasi proyek epoxy lantai CV Semesta Bumi Jayati: dapur SPPG, ruang produksi higienis, clean room, dan cold storage. Foto asli dari lokasi pengerjaan.',
+      h1: 'Proyek epoxy lantai yang kami kerjakan',
+    },
     slots: [
       {
         slot: 'daftar-klien',
         label: 'Daftar Klien',
         defaultEyebrow: 'Daftar Klien',
-        defaultTitle: '(dari data: `${clientCount} unit telah kami kerjakan`)',
+        defaultTitle: `${clientCount} unit telah kami kerjakan`,
         defaultLead: 'Daftar berikut disalin dari company profile resmi perusahaan, bagian “Our Projects — Cat Epoxy Lantai 2026”.',
       },
     ],
@@ -297,6 +341,11 @@ export const PAGE_SLOTS: PageSlots[] = [
   {
     path: '/area-layanan',
     label: 'Area Layanan',
+    seo: {
+      title: 'Area Layanan Jasa Epoxy Lantai',
+      description: 'CV Semesta Bumi Jayati melayani pekerjaan epoxy lantai di seluruh Indonesia. Proyek kami tersebar di Kediri, Nganjuk, Madura, Jawa Tengah, hingga Jakarta.',
+      h1: 'Area Layanan Jasa Epoxy Lantai Jayati Epoxy',
+    },
     slots: [
       {
         slot: 'kota-utama',
@@ -309,6 +358,11 @@ export const PAGE_SLOTS: PageSlots[] = [
   {
     path: '/tentang-kami',
     label: 'Tentang Kami',
+    seo: {
+      title: 'Tentang Kami — Jayati Epoxy',
+      description: 'Jayati Epoxy adalah kontraktor dan aplikator epoxy lantai di bawah Semesta Bumi Jayati. Kami mengutamakan persiapan permukaan yang benar dan penawaran yang transparan.',
+      h1: `Kontraktor Epoxy Lantai di Bawah ${site.legalName}`,
+    },
     slots: [
       {
         slot: 'prinsip-kerja',
@@ -330,6 +384,26 @@ export const PAGE_SLOTS: PageSlots[] = [
         defaultTitle: 'Yang kami kerjakan dan tidak',
       },
     ],
+  },
+  {
+    path: '/kontak',
+    label: 'Kontak',
+    seo: {
+      title: 'Kontak & Minta Penawaran Epoxy Lantai',
+      description: 'Hubungi Jayati Epoxy untuk konsultasi dan permintaan penawaran jasa epoxy lantai. Kirim detail area melalui formulir, WhatsApp, atau telepon.',
+      h1: 'Minta Penawaran atau Jadwalkan Survei',
+    },
+    slots: [],
+  },
+  {
+    path: '/blog',
+    label: 'Blog',
+    seo: {
+      title: 'Blog Epoxy Lantai — Panduan, Harga, dan Perawatan',
+      description: 'Artikel praktis seputar epoxy lantai: cara menghitung biaya, perbandingan epoxy dan keramik, penyebab lantai mengelupas, serta tahapan pemasangan yang benar.',
+      h1: 'Panduan praktis seputar epoxy lantai',
+    },
+    slots: [],
   },
 ];
 
@@ -396,4 +470,11 @@ export function sh(
 /** Apakah Owner menyembunyikan bagian ini. */
 export function hidden(map: CopyMap | undefined, slot: string): boolean {
   return Boolean(map?.[slot]?.isHidden);
+}
+
+/** Nilai bawaan SEO satu halaman, sebagaimana tertulis di kode. */
+export function seoDefaults(
+  path: string,
+): { title: string; description: string; h1: string } | undefined {
+  return SLOTS_BY_PATH[path]?.seo;
 }

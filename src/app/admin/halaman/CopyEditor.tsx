@@ -45,14 +45,29 @@ export function CopyEditor({
     );
   }
 
+  /**
+   * Isi kolom yang tampil. Bila Owner belum pernah mengubah sebuah kolom,
+   * kolom itu diisi teks bawaan yang sedang tampil di halaman publik — bukan
+   * dibiarkan kosong. Jadi Owner mengedit teks yang benar-benar ada, bukan
+   * menebak dari placeholder.
+   */
   function cur(s: SlotDef): Draft {
     const saved = copy[s.slot];
     return (
       draft[s.slot] ?? {
-        eyebrow: saved?.eyebrow ?? '',
-        title: saved?.title ?? '',
-        lead: saved?.lead ?? '',
+        eyebrow: saved?.eyebrow ?? s.defaultEyebrow ?? '',
+        title: saved?.title ?? s.defaultTitle ?? '',
+        lead: saved?.lead ?? s.defaultLead ?? '',
       }
+    );
+  }
+
+  /** Apakah isi kolom saat ini sama persis dengan teks bawaan kode. */
+  function isDefault(s: SlotDef, v: Draft): boolean {
+    return (
+      v.eyebrow.trim() === (s.defaultEyebrow ?? '').trim() &&
+      v.title.trim() === (s.defaultTitle ?? '').trim() &&
+      v.lead.trim() === (s.defaultLead ?? '').trim()
     );
   }
 
@@ -66,11 +81,18 @@ export function CopyEditor({
     setBusy(s.slot);
     setMsg(null);
     try {
-      const res = await fetch(`/api/admin/halaman/${pageId}/teks`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ slot: s.slot, ...v }),
-      });
+      // Bila Owner mengembalikan teks persis seperti bawaan, jangan simpan
+      // salinannya — lepaskan saja override-nya supaya bagian ini tetap
+      // mengikuti teks kode bila sewaktu-waktu diperbarui.
+      const res = isDefault(s, v)
+        ? await fetch(`/api/admin/halaman/${pageId}/teks?slot=${encodeURIComponent(s.slot)}`, {
+            method: 'DELETE',
+          })
+        : await fetch(`/api/admin/halaman/${pageId}/teks`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ slot: s.slot, ...v }),
+          });
       const d = (await res.json()) as {
         ok: boolean;
         error?: string;
@@ -148,14 +170,16 @@ export function CopyEditor({
   return (
     <div className="mt-4 grid gap-4">
       <p className="rounded-xl border border-navy-900/12 bg-cream-200/60 p-3 text-sm text-slate-700">
-        Kolom yang dibiarkan kosong akan memakai teks bawaan — teks bawaannya tertulis abu-abu di
-        dalam kolom. Susunan bagian dan tata letaknya tetap, jadi halaman tidak bisa rusak.
+        Kolom di bawah sudah terisi teks yang <strong>sedang tampil</strong> di halaman. Ubah
+        seperlunya, lalu simpan. Bila sebuah kolom dikosongkan, bagian itu kembali memakai teks
+        bawaan. Susunan bagian dan tata letaknya tetap, jadi halaman tidak bisa rusak.
       </p>
 
       {slots.map((s) => {
         const v = cur(s);
         const dirty = Boolean(draft[s.slot]);
         const overridden = Boolean(copy[s.slot]?.eyebrow || copy[s.slot]?.title || copy[s.slot]?.lead);
+        const backToDefault = dirty && isDefault(s, v);
         const placed = images[s.slot];
         const m = msg?.slot === s.slot ? msg : null;
 
@@ -203,7 +227,7 @@ export function CopyEditor({
                     id={`eb-${s.slot}`}
                     value={v.eyebrow}
                     onChange={(e) => set(s.slot, { eyebrow: e.target.value }, v)}
-                    placeholder={s.defaultEyebrow}
+                    placeholder={s.defaultEyebrow ?? 'Kosongkan bila tidak dipakai'}
                     maxLength={60}
                     className={field}
                   />
@@ -221,7 +245,7 @@ export function CopyEditor({
                   id={`ti-${s.slot}`}
                   value={v.title}
                   onChange={(e) => set(s.slot, { title: e.target.value }, v)}
-                  placeholder={s.defaultTitle}
+                  placeholder={s.defaultTitle ?? ''}
                   maxLength={140}
                   className={field}
                 />
@@ -240,7 +264,7 @@ export function CopyEditor({
                     rows={3}
                     value={v.lead}
                     onChange={(e) => set(s.slot, { lead: e.target.value }, v)}
-                    placeholder={s.defaultLead}
+                    placeholder={s.defaultLead ?? ''}
                     maxLength={600}
                     className={field}
                   />
@@ -320,7 +344,13 @@ export function CopyEditor({
                   : 'mt-4 cursor-default rounded-lg border border-navy-900/15 bg-slate-100 px-4 py-2.5 text-sm font-bold text-slate-400'
               }
             >
-              {busy === s.slot ? 'Menyimpan…' : dirty ? 'Simpan bagian ini' : 'Belum ada perubahan'}
+              {busy === s.slot
+                ? 'Menyimpan…'
+                : backToDefault
+                  ? 'Simpan — kembali ke teks bawaan'
+                  : dirty
+                    ? 'Simpan bagian ini'
+                    : 'Belum ada perubahan'}
             </button>
           </section>
         );
