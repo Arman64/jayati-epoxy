@@ -66,8 +66,14 @@ export async function DELETE(_request: Request, { params }: { params: { id: stri
   // Berkas fisik menyusul. Bila gagal dihapus, catatan basis data sudah hilang
   // sehingga gambar tidak lagi dipakai di mana pun.
   try {
+    // Unggahan baru bertipe `/media/<nama>` tetapi berkasnya tetap disimpan di
+    // `public/img/unggahan/`; gambar lama memakai path apa adanya di `public/`.
+    // Keduanya harus ditangani agar berkas tidak menumpuk di disk.
     const rel = media.path.replace(/^\/+/, '');
-    await unlink(path.join(process.cwd(), 'public', rel));
+    const target = rel.startsWith('media/')
+      ? path.join(process.cwd(), 'public', 'img', 'unggahan', path.basename(rel))
+      : path.join(process.cwd(), 'public', rel);
+    await unlink(target);
   } catch {
     /* berkas sudah tidak ada — abaikan */
   }

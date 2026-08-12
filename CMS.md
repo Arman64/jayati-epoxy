@@ -69,6 +69,18 @@ diunggah. Tombol **Pakai foto bawaan** mengembalikannya seperti semula.
 dan dipakai Google untuk memahami isi foto. Ukuran gambar dibaca otomatis dari
 berkasnya, sehingga halaman tidak bergeser saat foto dimuat.
 
+**Setiap foto otomatis dikonversi ke format AVIF.** Anda tetap mengunggah JPG,
+PNG, atau WebP seperti biasa — sistem yang mengubahnya. Hasilnya rata-rata
+60% lebih kecil dari berkas asli tanpa penurunan mutu yang terlihat, sehingga
+halaman terbuka lebih cepat. Dua hal lain ikut dibereskan otomatis:
+
+- Foto yang lebih besar dari 2000 piksel diperkecil (foto ponsel jauh lebih
+  besar dari kebutuhan situs).
+- Foto dari ponsel yang biasanya tampil terbalik diluruskan sesuai orientasi
+  aslinya.
+
+Anda tidak perlu menyiapkan apa pun sebelum mengunggah.
+
 Berkas yang menyamar sebagai gambar akan ditolak — isi berkas benar-benar
 diperiksa, bukan sekadar namanya.
 

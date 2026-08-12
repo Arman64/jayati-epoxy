@@ -360,7 +360,9 @@ export function validateItem(
           const h = Number(o.height);
 
           if (!src) return;
-          if (!/^\/[\w\-./]+\.(webp|jpg|jpeg|png)$/i.test(src)) {
+          // avif = format hasil konversi otomatis saat unggah; webp/jpg/png
+          // tetap diterima karena foto lama masih memakainya.
+          if (!/^\/[\w\-./]+\.(avif|webp|jpg|jpeg|png)$/i.test(src)) {
             problems.push({ field: f.key, message: `Foto ke-${i + 1}: alamat berkas tidak sah.` });
             return;
           }

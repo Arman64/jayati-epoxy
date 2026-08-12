@@ -5,6 +5,7 @@ import { randomBytes } from 'crypto';
 import { getSessionUser } from '@/lib/auth';
 import { createMedia, listMedia } from '@/lib/page-copy';
 import { imageSize } from '@/lib/image-size';
+import { toAvif } from '@/lib/image-convert';
 import { logCmsEvent } from '@/lib/mcp';
 
 export const runtime = 'nodejs';
@@ -108,26 +109,38 @@ export async function POST(request: Request) {
     );
   }
 
+  // Semua unggahan dikonversi ke AVIF: ukurannya jauh lebih kecil pada kualitas
+  // setara, dan orientasi EXIF ikut diluruskan supaya foto ponsel tidak terbalik.
+  let converted;
+  try {
+    converted = await toAvif(buf);
+  } catch {
+    return NextResponse.json(
+      { ok: false, problems: [{ field: 'file', message: 'Gambar gagal diproses. Coba berkas lain.' }] },
+      { status: 422 },
+    );
+  }
+
   // Nama berkas dibuat sendiri; nama asli dari pengguna tidak pernah dipakai
   // sebagai path, sehingga tidak ada risiko path traversal.
-  const ext = size.mime === 'image/png' ? 'png' : size.mime === 'image/webp' ? 'webp' : 'jpg';
-  const name = `${Date.now().toString(36)}-${randomBytes(6).toString('hex')}.${ext}`;
+  const name = `${Date.now().toString(36)}-${randomBytes(6).toString('hex')}.avif`;
 
   try {
     await mkdir(UPLOAD_DIR, { recursive: true });
-    await writeFile(path.join(UPLOAD_DIR, name), buf);
+    await writeFile(path.join(UPLOAD_DIR, name), converted.buffer);
   } catch {
     return NextResponse.json({ ok: false, error: 'Gambar gagal disimpan di server.' }, { status: 500 });
   }
 
   const media = await createMedia(
     {
-      path: `/img/unggahan/${name}`,
+      // Disajikan lewat /media/... agar langsung tampil tanpa restart server.
+      path: `/media/${name}`,
       alt,
-      width: size.width,
-      height: size.height,
-      bytes: buf.length,
-      mime: size.mime,
+      width: converted.width,
+      height: converted.height,
+      bytes: converted.bytes,
+      mime: 'image/avif',
     },
     user.id,
   );
