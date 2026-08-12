@@ -6,7 +6,16 @@
  * Akses database ada di `src/lib/content-db.ts`.
  */
 
-export type FieldType = 'text' | 'textarea' | 'number' | 'rupiah' | 'list' | 'select' | 'boolean';
+export type FieldType =
+  | 'text'
+  | 'textarea'
+  | 'number'
+  | 'rupiah'
+  | 'list'
+  | 'select'
+  | 'boolean'
+  /** Kumpulan foto dari pustaka gambar, lengkap dengan teks alternatif. */
+  | 'photos';
 
 export type FieldDef = {
   key: string;
@@ -191,6 +200,60 @@ export const COLLECTIONS: CollectionDef[] = [
       { key: 'region', label: 'Provinsi', type: 'text', required: true, maxLength: 80 },
     ],
   },
+  {
+    id: 'projects',
+    label: 'Proyek Portofolio',
+    description:
+      'Daftar proyek beserta fotonya. Tampil di halaman Portofolio, halaman detail tiap proyek, galeri di beranda, dan halaman layanan.',
+    titleField: 'name',
+    allowCreate: true,
+    allowDelete: true,
+    sensitive:
+      'Jangan mencantumkan nama klien, luas area, atau durasi pengerjaan yang tidak tertulis di dokumen resmi perusahaan.',
+    fields: [
+      { key: 'name', label: 'Nama proyek', type: 'text', required: true, maxLength: 140 },
+      {
+        key: 'category',
+        label: 'Kategori',
+        type: 'text',
+        required: true,
+        hint: 'Contoh: Dapur SPPG, Clean Room, Gudang.',
+        maxLength: 60,
+      },
+      { key: 'city', label: 'Kota', type: 'text', required: true, maxLength: 60 },
+      { key: 'buildingType', label: 'Jenis bangunan', type: 'text', maxLength: 120 },
+      { key: 'system', label: 'Sistem yang dipakai', type: 'text', maxLength: 120 },
+      { key: 'thickness', label: 'Ketebalan', type: 'text', maxLength: 80 },
+      {
+        key: 'summary',
+        label: 'Ringkasan',
+        type: 'textarea',
+        required: true,
+        hint: 'Satu sampai dua kalimat. Tampil di kartu daftar portofolio.',
+        maxLength: 400,
+      },
+      { key: 'scope', label: 'Lingkup pekerjaan', type: 'list', hint: 'Satu poin per baris.' },
+      {
+        key: 'detail',
+        label: 'Penjelasan',
+        type: 'list',
+        hint: 'Satu paragraf per baris. Tampil di halaman detail proyek.',
+      },
+      {
+        key: 'photos',
+        label: 'Foto proyek',
+        type: 'photos',
+        required: true,
+        hint: 'Foto pertama dipakai sebagai gambar utama di kartu dan halaman detail.',
+      },
+      {
+        key: 'hasRealPhoto',
+        label: 'Foto asli dokumentasi perusahaan',
+        type: 'boolean',
+        hint: 'Kosongkan bila foto masih berupa contoh sementara.',
+      },
+    ],
+  },
 ];
 
 export function collectionDef(id: string): CollectionDef | undefined {
@@ -281,6 +344,52 @@ export function validateItem(
       }
       case 'boolean': {
         data[f.key] = Boolean(raw);
+        break;
+      }
+      case 'photos': {
+        // Setiap foto wajib punya ukuran (agar tata letak tidak bergeser) dan
+        // teks alternatif (dibaca pembaca layar serta mesin pencari).
+        const arr = Array.isArray(raw) ? raw : [];
+        const clean: Array<Record<string, unknown>> = [];
+
+        arr.slice(0, 12).forEach((item, i) => {
+          const o = (item ?? {}) as Record<string, unknown>;
+          const src = String(o.src ?? '').trim();
+          const alt = String(o.alt ?? '').trim();
+          const w = Number(o.width);
+          const h = Number(o.height);
+
+          if (!src) return;
+          if (!/^\/[\w\-./]+\.(webp|jpg|jpeg|png)$/i.test(src)) {
+            problems.push({ field: f.key, message: `Foto ke-${i + 1}: alamat berkas tidak sah.` });
+            return;
+          }
+          if (!alt) {
+            problems.push({
+              field: f.key,
+              message: `Foto ke-${i + 1}: teks alternatif wajib diisi.`,
+            });
+            return;
+          }
+          if (!Number.isFinite(w) || !Number.isFinite(h) || w <= 0 || h <= 0) {
+            problems.push({ field: f.key, message: `Foto ke-${i + 1}: ukuran gambar tidak diketahui.` });
+            return;
+          }
+
+          const caption = String(o.caption ?? '').trim();
+          clean.push({
+            src,
+            alt: alt.slice(0, 200),
+            width: Math.round(w),
+            height: Math.round(h),
+            ...(caption ? { caption: caption.slice(0, 300) } : {}),
+          });
+        });
+
+        if (f.required && clean.length === 0) {
+          problems.push({ field: f.key, message: `${f.label} minimal satu foto.` });
+        }
+        data[f.key] = clean;
         break;
       }
     }

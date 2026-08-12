@@ -103,6 +103,25 @@ harga, landing page iklan, dan halaman buatan sendiri.
 | FAQ Harga | Pertanyaan seputar biaya | Halaman harga |
 | Angka Kepercayaan | Statistik singkat | Beranda |
 | Kota | Daftar kota layanan | Area layanan, footer |
+| **Proyek Portofolio** | **Nama, keterangan, dan foto tiap proyek** | **Portofolio, halaman detail proyek, galeri di beranda & halaman layanan** |
+
+### Mengubah foto proyek portofolio
+
+Pilih **Proyek Portofolio**, lalu **Ubah** pada proyek yang dituju. Di bagian
+**Foto proyek** Anda bisa:
+
+- **+ Tambah foto** — membuka pustaka gambar yang sama dengan pengaturan
+  halaman, jadi foto yang sudah diunggah bisa dipakai ulang.
+- **▲ ▼** — mengatur urutan. **Foto pertama dipakai sebagai gambar utama**
+  di kartu portofolio dan di halaman detail proyek.
+- **Hapus** — membuang foto dari proyek (berkasnya tetap ada di pustaka).
+
+Setiap foto wajib punya **teks alternatif**. Ukuran gambar terbawa otomatis
+dari pustaka sehingga halaman tidak bergeser saat foto dimuat.
+
+Menambah proyek baru: tekan **+ Tambah**, isi nama, kategori, kota, ringkasan,
+dan minimal satu foto. Proyek baru otomatis muncul di halaman Portofolio
+lengkap dengan halaman detailnya sendiri.
 
 Setiap item bisa diurutkan (**↑ ↓**), dinonaktifkan sementara, atau dihapus.
 Item yang dinonaktifkan langsung hilang dari semua halaman publik, dan

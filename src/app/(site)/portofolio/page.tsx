@@ -3,7 +3,8 @@ import { buildMetadata, breadcrumbSchema } from '@/lib/seo';
 import { pageOverride } from '@/lib/pages';
 import { JsonLd } from '@/components/JsonLd';
 import { Breadcrumbs, CtaBand, Disclaimer, ProjectPhoto, SectionHead } from '@/components/Sections';
-import { clientCount, clientGroups, projects } from '@/lib/content';
+import { clientCount, clientGroups } from '@/lib/content';
+import { getProjects } from '@/lib/content-db';
 import { IconArrow, IconCheck } from '@/components/Icons';
 import { site } from '@/lib/site';
 import { getPageCopy } from '@/lib/page-copy';
@@ -29,6 +30,7 @@ export async function generateMetadata() {
 export default async function PortofolioPage() {
   const o = await pageOverride(PATH);
   const copy = await getPageCopy(PATH);
+  const projects = await getProjects();
   const crumbs = [
     { name: 'Beranda', path: '/' },
     { name: 'Portofolio', path: PATH },

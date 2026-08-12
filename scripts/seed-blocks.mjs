@@ -92,6 +92,7 @@ const whyChooseUs = arrayLiteral('whyChooseUs');
 const generalFaqs = arrayLiteral('generalFaqs');
 const priceFaqs = arrayLiteral('priceFaqs');
 const cities = arrayLiteral('cities');
+const projects = arrayLiteral('projects');
 
 const clientCountMatch = src.match(/clientGroups\.reduce/);
 const stats = [
@@ -163,6 +164,31 @@ const plan = [
   {
     collection: 'stats',
     items: stats.map((s) => ({ slug: slugify(s.eyebrow), data: s })),
+  },
+  {
+    collection: 'projects',
+    items: projects.map((p) => ({
+      slug: p.slug,
+      data: {
+        name: p.name,
+        category: p.category,
+        city: p.city,
+        buildingType: p.buildingType ?? '',
+        system: p.system ?? '',
+        thickness: p.thickness ?? '',
+        summary: p.summary,
+        scope: p.scope ?? [],
+        detail: p.detail ?? [],
+        photos: (p.photos ?? []).map((f) => ({
+          src: f.src,
+          alt: f.alt,
+          width: f.width,
+          height: f.height,
+          ...(f.caption ? { caption: f.caption } : {}),
+        })),
+        hasRealPhoto: Boolean(p.hasRealPhoto),
+      },
+    })),
   },
 ];
 

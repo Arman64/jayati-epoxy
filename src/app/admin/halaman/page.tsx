@@ -3,7 +3,7 @@ import { requireOwner } from '@/lib/auth';
 import { listPages } from '@/lib/pages';
 import { getCustomPages, listSections } from '@/lib/page-sections';
 import { COLLECTIONS } from '@/lib/collections';
-import { listItems } from '@/lib/content-db';
+import { listItems, contentDbReachable } from '@/lib/content-db';
 import { slotsFor } from '@/lib/page-slots';
 import { AdminShell } from '../AdminShell';
 import { NewPageForm } from './NewPageForm';
@@ -30,6 +30,7 @@ export default async function PagesAdmin({
   if (tab === 'bersama') {
     const active = COLLECTIONS.find((c) => c.id === searchParams.c) ?? COLLECTIONS[0]!;
     const items = await listItems(active.id);
+    const dbOk = await contentDbReachable();
     const counts: Record<string, number> = {};
     await Promise.all(
       COLLECTIONS.map(async (c) => {
@@ -46,6 +47,20 @@ export default async function PagesAdmin({
         </p>
 
         <Tabs base="/admin/halaman" tabs={tabs} active={tab} />
+
+        {dbOk ? null : (
+          <p
+            role="alert"
+            className="mt-4 max-w-[75ch] rounded-xl border border-red-300 bg-red-50 p-3 text-sm font-semibold text-red-800"
+          >
+            Basis data sedang tidak bisa dihubungi, jadi daftar di bawah tampak kosong.
+            <span className="font-normal">
+              {' '}
+              Data Anda tidak hilang — muat ulang halaman ini setelah basis data menyala kembali.
+              Halaman publik sementara memakai data bawaan.
+            </span>
+          </p>
+        )}
 
         <p className="mt-4 max-w-[75ch] rounded-xl border border-navy-900/12 bg-cream-200/60 p-3 text-sm text-slate-700">
           Data di tab ini muncul di beberapa halaman sekaligus — harga per m², daftar layanan,

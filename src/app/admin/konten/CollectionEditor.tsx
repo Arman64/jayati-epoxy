@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import type { CollectionDef, FieldDef } from '@/lib/collections';
+import { PhotoListField, type PhotoValue } from './PhotoListField';
 
 type Item = {
   id: number;
@@ -45,7 +46,13 @@ function FieldInput({
         {def.required ? <span className="ml-1 text-red-600">*</span> : null}
       </label>
 
-      {def.type === 'textarea' ? (
+      {def.type === 'photos' ? (
+        <PhotoListField
+          value={(Array.isArray(value) ? value : []) as PhotoValue[]}
+          onChange={(v) => onChange(v)}
+          hint={def.hint}
+        />
+      ) : def.type === 'textarea' ? (
         <textarea
           id={id}
           rows={3}
@@ -167,7 +174,7 @@ export function CollectionEditor({
     const blank: Record<string, unknown> = {};
     for (const f of def.fields) {
       blank[f.key] =
-        f.type === 'list' ? [] : f.type === 'boolean' ? false : f.type === 'select' ? f.options?.[0] ?? '' : f.type === 'number' || f.type === 'rupiah' ? '' : '';
+        f.type === 'list' || f.type === 'photos' ? [] : f.type === 'boolean' ? false : f.type === 'select' ? f.options?.[0] ?? '' : f.type === 'number' || f.type === 'rupiah' ? '' : '';
     }
     setForm(blank);
     setEditing('new');
@@ -319,7 +326,7 @@ export function CollectionEditor({
                 {def.fields.map((f) => (
                   <div
                     key={f.key}
-                    className={f.type === 'textarea' || f.type === 'list' ? 'sm:col-span-2' : ''}
+                    className={f.type === 'textarea' || f.type === 'list' || f.type === 'photos' ? 'sm:col-span-2' : ''}
                   >
                     <FieldInput
                       def={f}

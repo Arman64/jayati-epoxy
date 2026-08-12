@@ -49,6 +49,22 @@ async function loadAll(): Promise<Record<string, ContentItem[]>> {
   }
 }
 
+/**
+ * Apakah basis data bisa dihubungi saat ini.
+ *
+ * Dibutuhkan panel admin: bila koneksi putus, daftar konten akan terlihat
+ * kosong dan Owner bisa mengira datanya terhapus. Lebih baik berkata terus
+ * terang bahwa basis data sedang tidak bisa dibaca.
+ */
+export async function contentDbReachable(): Promise<boolean> {
+  try {
+    await query('SELECT 1 FROM content_items LIMIT 1');
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export const getAllContent = unstable_cache(loadAll, ['content-items'], {
   tags: [TAG],
   revalidate: 300,
@@ -301,5 +317,38 @@ export async function getStats(): Promise<Stat[]> {
     eyebrow: String(r.eyebrow ?? ''),
     value: String(r.value ?? ''),
     note: String(r.note ?? ''),
+  }));
+}
+
+/**
+ * Proyek portofolio. Bila basis data kosong atau bermasalah, kembali ke
+ * daftar bawaan di `content.ts` supaya halaman portofolio tidak pernah
+ * tampil kosong.
+ */
+export async function getProjects(): Promise<typeof fallback.projects> {
+  const rows = await activeItems('projects');
+  if (!rows.length) return fallback.projects;
+
+  return rows.map((r) => ({
+    slug: String(r.slug),
+    name: String(r.name ?? ''),
+    category: String(r.category ?? ''),
+    city: String(r.city ?? ''),
+    buildingType: String(r.buildingType ?? ''),
+    system: String(r.system ?? ''),
+    thickness: String(r.thickness ?? ''),
+    summary: String(r.summary ?? ''),
+    scope: Array.isArray(r.scope) ? r.scope.map(String) : [],
+    detail: Array.isArray(r.detail) ? r.detail.map(String) : [],
+    photos: Array.isArray(r.photos)
+      ? (r.photos as Array<Record<string, unknown>>).map((f) => ({
+          src: String(f.src ?? ''),
+          alt: String(f.alt ?? ''),
+          width: Number(f.width) || 1200,
+          height: Number(f.height) || 900,
+          ...(f.caption ? { caption: String(f.caption) } : {}),
+        }))
+      : [],
+    hasRealPhoto: Boolean(r.hasRealPhoto),
   }));
 }

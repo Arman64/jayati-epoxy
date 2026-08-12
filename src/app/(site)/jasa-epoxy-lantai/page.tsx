@@ -12,8 +12,8 @@ import {
   ProjectPhoto,
   SectionHead,
 } from '@/components/Sections';
-import { formatRupiah, projects, priceRange } from '@/lib/content';
-import { getCities, getEpoxySystems, getGeneralFaqs, getWorkSteps } from '@/lib/content-db';
+import { formatRupiah, priceRange } from '@/lib/content';
+import { getCities, getEpoxySystems, getGeneralFaqs, getWorkSteps, getProjects } from '@/lib/content-db';
 import { IconArrow, IconClock, IconMapPin, IconWhatsApp } from '@/components/Icons';
 import { defaultWaMessage, site, waLink } from '@/lib/site';
 import { TrackedLink } from '@/components/TrackedLink';
@@ -54,13 +54,14 @@ const pageSpecificFaqs = [
 ];
 
 export default async function JasaEpoxyPage() {
-  const [o, epoxySystems, generalFaqs, workSteps, cities, copy] = await Promise.all([
+  const [o, epoxySystems, generalFaqs, workSteps, cities, copy, projects] = await Promise.all([
     pageOverride(PATH),
     getEpoxySystems(),
     getGeneralFaqs(),
     getWorkSteps(),
     getCities(),
     getPageCopy(PATH),
+    getProjects(),
   ]);
 
   // FAQ khusus halaman ini digabung dengan FAQ umum yang dikelola dari CMS.

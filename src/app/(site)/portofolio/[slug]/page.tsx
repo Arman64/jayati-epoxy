@@ -3,17 +3,19 @@ import { notFound } from 'next/navigation';
 import { buildMetadata, breadcrumbSchema } from '@/lib/seo';
 import { JsonLd } from '@/components/JsonLd';
 import { Breadcrumbs, CtaBand, Disclaimer, ProjectPhoto, SectionHead } from '@/components/Sections';
-import { projects } from '@/lib/content';
+import { getProjects } from '@/lib/content-db';
 import { IconArrow, IconCheck } from '@/components/Icons';
 import { site } from '@/lib/site';
 
 type Props = { params: { slug: string } };
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const projects = await getProjects();
   return projects.map((p) => ({ slug: p.slug }));
 }
 
-export function generateMetadata({ params }: Props) {
+export async function generateMetadata({ params }: Props) {
+  const projects = await getProjects();
   const project = projects.find((p) => p.slug === params.slug);
   if (!project)
     return buildMetadata({
@@ -30,7 +32,8 @@ export function generateMetadata({ params }: Props) {
   });
 }
 
-export default function ProjectPage({ params }: Props) {
+export default async function ProjectPage({ params }: Props) {
+  const projects = await getProjects();
   const project = projects.find((p) => p.slug === params.slug);
   if (!project) notFound();
 

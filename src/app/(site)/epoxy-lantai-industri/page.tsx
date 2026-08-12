@@ -13,11 +13,11 @@ import {
   SectionHead,
 } from '@/components/Sections';
 import { QuotationForm } from '@/components/QuotationForm';
-import { projects } from '@/lib/content';
 import { IconArrow, IconWhatsApp } from '@/components/Icons';
 import { waLink } from '@/lib/site';
 import { TrackedLink } from '@/components/TrackedLink';
 import { getPageCopy } from '@/lib/page-copy';
+import { getProjects } from '@/lib/content-db';
 import { sh } from '@/lib/page-slots';
 
 const PATH = '/epoxy-lantai-industri';
@@ -77,6 +77,7 @@ const industryFaqs = [
 export default async function IndustriPage() {
   const o = await pageOverride(PATH);
   const copy = await getPageCopy(PATH);
+  const projects = await getProjects();
   const crumbs = [
     { name: 'Beranda', path: '/' },
     { name: 'Epoxy Lantai Industri', path: PATH },

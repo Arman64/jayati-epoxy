@@ -15,7 +15,6 @@ import {
 import {
   generalFaqs as fallbackFaqs,
   formatRupiah,
-  projects,
   clientCount,
   priceRange,
 } from '@/lib/content';
@@ -32,6 +31,7 @@ import { iconMap, IconArrow, IconCheck, IconWhatsApp, IconMapPin } from '@/compo
 import { defaultWaMessage, site, waLink } from '@/lib/site';
 import { TrackedLink } from '@/components/TrackedLink';
 import { getPageCopy } from '@/lib/page-copy';
+import { getProjects } from '@/lib/content-db';
 import { sh } from '@/lib/page-slots';
 
 const PATH = '/';
@@ -60,7 +60,7 @@ const fallbackTrustPoints = [
 ];
 
 export default async function HomePage() {
-  const [o, coreServices, epoxySystems, workSteps, whyChooseUs, generalFaqs, cities, stats, copy] =
+  const [o, coreServices, epoxySystems, workSteps, whyChooseUs, generalFaqs, cities, stats, copy, projects] =
     await Promise.all([
       pageOverride(PATH),
       getCoreServices(),
@@ -71,6 +71,7 @@ export default async function HomePage() {
       getCities(),
       getStats(),
       getPageCopy(PATH),
+      getProjects(),
     ]);
 
   const trustPoints = stats.length ? stats : fallbackTrustPoints;
