@@ -1,5 +1,7 @@
 import Image from 'next/image';
-import { site, waLink, defaultWaMessage } from '@/lib/site';
+import { site } from '@/lib/site';
+import { getSettings } from '@/lib/settings';
+import { toContactInfo, waHref } from '@/lib/contact';
 import { IconPhone, IconWhatsApp } from '@/components/Icons';
 import { LpViewTracker } from '@/components/LpViewTracker';
 
@@ -8,7 +10,9 @@ import { LpViewTracker } from '@/components/LpViewTracker';
  * Navigasi keluar diminimalkan: tidak ada menu utama dan tidak ada footer
  * navigasi lengkap, hanya kontak dan legal.
  */
-export default function LpLayout({ children }: { children: React.ReactNode }) {
+export default async function LpLayout({ children }: { children: React.ReactNode }) {
+  const { contact: cs } = await getSettings();
+  const contact = toContactInfo(cs);
   return (
     <div className="flex min-h-screen flex-col bg-white">
       <LpViewTracker />
@@ -35,15 +39,15 @@ export default function LpLayout({ children }: { children: React.ReactNode }) {
           </div>
           <div className="flex items-center gap-2">
             <a
-              href={`tel:${site.phoneE164}`}
+              href={`tel:${contact.phoneE164}`}
               className="btn-outline !px-3.5 !py-2 text-[13px] max-sm:hidden"
-              aria-label={`Telepon ${site.phoneDisplay}`}
+              aria-label={`Telepon ${contact.phoneDisplay}`}
             >
               <IconPhone className="h-4 w-4" />
-              {site.phoneDisplay}
+              {contact.phoneDisplay}
             </a>
             <a
-              href={waLink(defaultWaMessage, 'lp-header')}
+              href={waHref(contact, undefined, 'lp-header')}
               target="_blank"
               rel="noopener noreferrer"
               className="btn-primary !px-4 !py-2.5 text-[13px]"
@@ -61,10 +65,10 @@ export default function LpLayout({ children }: { children: React.ReactNode }) {
         <div className="container-page text-center">
           <p className="text-sm font-bold text-navy-900">{site.legalName}</p>
           <p className="mt-1.5 text-[13px] text-slate-600">
-            {site.address.locality}, {site.address.region} · {site.openingHours}
+            {cs.addressCity}, {cs.addressRegion} · {cs.hours}
           </p>
           <p className="mt-1.5 text-[13px] text-slate-600">
-            {site.phoneDisplay} · {site.email}
+            {contact.phoneDisplay} · {contact.email}
           </p>
           <p className="mt-4 text-xs text-slate-500">
             © {new Date().getFullYear()} {site.legalName}.{' '}

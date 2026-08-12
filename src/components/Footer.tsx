@@ -2,9 +2,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { site } from '@/lib/site';
 import { getCities, getCoreServices } from '@/lib/content-db';
+import { getSettings } from '@/lib/settings';
 import { IconMail, IconMapPin, IconPhone, IconClock } from './Icons';
 
 export async function Footer() {
+  // Kontak, alamat, dan jam kerja mengikuti Pengaturan Kontak di admin.
+  const { contact } = await getSettings();
   const [coreServices, cities] = await Promise.all([getCoreServices(), getCities()]);
   const year = new Date().getFullYear();
 
@@ -31,7 +34,7 @@ export async function Footer() {
           </div>
           <p className="mt-4 text-sm leading-relaxed">{site.description}</p>
           <p className="mt-4 text-xs text-white/55">
-            Layanan: {site.serviceArea}. Cakupan pengerjaan di luar kota mengikuti konfirmasi jadwal
+            Layanan: {contact.serviceArea}. Cakupan pengerjaan di luar kota mengikuti konfirmasi jadwal
             dan biaya mobilisasi.
           </p>
         </div>
@@ -86,27 +89,27 @@ export async function Footer() {
           <address className="mt-4 space-y-3 text-sm not-italic">
             <p className="flex gap-2.5">
               <IconPhone className="mt-0.5 h-4 w-4 shrink-0 text-leaf-400" />
-              <a href={`tel:${site.phoneE164}`} className="hover:text-leaf-300">
-                {site.phoneDisplay}
+              <a href={`tel:${contact.phoneE164}`} className="hover:text-leaf-300">
+                {contact.phoneDisplay}
               </a>
             </p>
             <p className="flex gap-2.5">
               <IconMail className="mt-0.5 h-4 w-4 shrink-0 text-leaf-400" />
-              <a href={`mailto:${site.email}`} className="hover:text-leaf-300">
-                {site.email}
+              <a href={`mailto:${contact.email}`} className="hover:text-leaf-300">
+                {contact.email}
               </a>
             </p>
             <p className="flex gap-2.5">
               <IconMapPin className="mt-0.5 h-4 w-4 shrink-0 text-leaf-400" />
               <span>
-                {site.address.street}
+                {contact.addressStreet}
                 <br />
-                {site.address.locality}, {site.address.region} {site.address.postalCode}
+                {contact.addressCity}, {contact.addressRegion} {contact.addressPostal}
               </span>
             </p>
             <p className="flex gap-2.5">
               <IconClock className="mt-0.5 h-4 w-4 shrink-0 text-leaf-400" />
-              <span>{site.openingHours}</span>
+              <span>{contact.hours}</span>
             </p>
           </address>
         </div>

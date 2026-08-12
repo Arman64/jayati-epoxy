@@ -3,6 +3,8 @@ import { pageOverride } from '@/lib/pages';
 import { JsonLd } from '@/components/JsonLd';
 import { Breadcrumbs, Disclaimer } from '@/components/Sections';
 import { site } from '@/lib/site';
+import { getSettings } from '@/lib/settings';
+import { toContactInfo, waHref } from '@/lib/contact';
 
 const PATH = '/privacy-policy';
 
@@ -65,6 +67,7 @@ const sections = [
 ];
 
 export default async function PrivacyPage() {
+  const contact = toContactInfo((await getSettings()).contact);
   const o = await pageOverride(PATH);
   const crumbs = [
     { name: 'Beranda', path: '/' },
@@ -93,8 +96,8 @@ export default async function PrivacyPage() {
             <section>
               <h2 className="text-xl">Kontak</h2>
               <p className="prose-brand mt-3">
-                Pertanyaan mengenai kebijakan ini dapat disampaikan melalui email {site.email} atau
-                telepon {site.phoneDisplay}.
+                Pertanyaan mengenai kebijakan ini dapat disampaikan melalui email {contact.email} atau
+                telepon {contact.phoneDisplay}.
               </p>
             </section>
           </div>

@@ -16,7 +16,8 @@ import { QuotationForm } from '@/components/QuotationForm';
 import { formatRupiah, priceForArea } from '@/lib/content';
 import { getEpoxySystems } from '@/lib/content-db';
 import { IconArrow, IconWhatsApp } from '@/components/Icons';
-import { waLink } from '@/lib/site';
+import { getSettings } from '@/lib/settings';
+import { toContactInfo, waHref } from '@/lib/contact';
 import { TrackedLink } from '@/components/TrackedLink';
 import { getPageCopy, getPageImages, imageOr } from '@/lib/page-copy';
 import { sh } from '@/lib/page-slots';
@@ -98,6 +99,7 @@ function buildHomeFaqs(basePrice: number) {
 }
 
 export default async function RumahPage() {
+  const contact = toContactInfo((await getSettings()).contact);
   const [o, epoxySystems, copy, images] = await Promise.all([
     pageOverride(PATH),
     getEpoxySystems(),
@@ -163,7 +165,7 @@ export default async function RumahPage() {
 
             <div className="mt-7 flex flex-wrap gap-3">
               <TrackedLink
-                href={waLink('Halo, saya ingin epoxy lantai untuk rumah saya.', 'rumah-hero')}
+                href={waHref(contact, 'Halo, saya ingin epoxy lantai untuk rumah saya.', 'rumah-hero')}
                 external
                 event="whatsapp_click"
                 params={{ cta_position: 'hero', keyword_cluster: 'rumah' }}

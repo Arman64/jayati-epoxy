@@ -6,7 +6,8 @@ import { curvingPrice as fallbackCurving, epoxySystems as fallbackSystems, forma
 type CurvingPrice = { label: string; unit: string; under100: number; over100: number; over500: number; unverified: boolean };
 import { track } from '@/lib/analytics';
 import { IconInfo } from './Icons';
-import { defaultWaMessage, site, waLink } from '@/lib/site';
+import { site } from '@/lib/site';
+import { waHref, type ContactInfo } from '@/lib/contact';
 
 /**
  * Kalkulator estimasi — PRD §6 LP-02.
@@ -19,11 +20,14 @@ import { defaultWaMessage, site, waLink } from '@/lib/site';
 export function PriceCalculator({
   systems,
   curvingPrice: curvingProp,
+  contact,
 }: {
   /** Pricelist dari CMS. Bila kosong, memakai daftar bawaan. */
   systems?: EpoxySystem[];
   curvingPrice?: CurvingPrice;
-} = {}) {
+  /** Kontak dari Pengaturan Kontak — dikirim induk karena ini client component. */
+  contact: ContactInfo;
+}) {
   const epoxySystems = systems?.length ? systems : fallbackSystems;
   const curvingPrice = curvingProp ?? fallbackCurving;
 
@@ -175,7 +179,8 @@ export function PriceCalculator({
             </div>
           </dl>
           <a
-            href={waLink(
+            href={waHref(
+              contact,
               `Halo, saya sudah menghitung estimasi di website: ${result.system.name}, luas ${area} m²${
                 result.hasCurving ? `, curving ${result.lm} meter lari` : ''
               }. Estimasi ${formatRupiah(result.total)}. Mohon dibantu penawaran resminya.`,
@@ -206,7 +211,7 @@ export function PriceCalculator({
       <noscript>
         <p className="mt-3 text-[13px] text-slate-600">
           Kalkulator memerlukan JavaScript.{' '}
-          <a className="link-underline" href={waLink(defaultWaMessage, 'noscript')}>
+          <a className="link-underline" href={waHref(contact, undefined, 'noscript')}>
             Hubungi kami via WhatsApp
           </a>{' '}
           untuk estimasi manual.

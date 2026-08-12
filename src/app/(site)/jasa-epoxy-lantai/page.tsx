@@ -15,7 +15,9 @@ import {
 import { formatRupiah, priceRange } from '@/lib/content';
 import { getCities, getEpoxySystems, getGeneralFaqs, getWorkSteps, getProjects } from '@/lib/content-db';
 import { IconArrow, IconClock, IconMapPin, IconWhatsApp } from '@/components/Icons';
-import { defaultWaMessage, site, waLink } from '@/lib/site';
+import { site } from '@/lib/site';
+import { getSettings } from '@/lib/settings';
+import { toContactInfo, waHref } from '@/lib/contact';
 import { TrackedLink } from '@/components/TrackedLink';
 import { QuotationForm } from '@/components/QuotationForm';
 import { getPageCopy } from '@/lib/page-copy';
@@ -54,6 +56,7 @@ const pageSpecificFaqs = [
 ];
 
 export default async function JasaEpoxyPage() {
+  const contact = toContactInfo((await getSettings()).contact);
   const [o, epoxySystems, generalFaqs, workSteps, cities, copy, projects] = await Promise.all([
     pageOverride(PATH),
     getEpoxySystems(),
@@ -118,7 +121,7 @@ export default async function JasaEpoxyPage() {
             />
             <div className="mt-8 flex flex-wrap gap-3">
               <TrackedLink
-                href={waLink('Halo, saya ingin konsultasi jasa epoxy lantai.', 'jasa-hero')}
+                href={waHref(contact, 'Halo, saya ingin konsultasi jasa epoxy lantai.', 'jasa-hero')}
                 external
                 event="whatsapp_click"
                 params={{ cta_position: 'hero', keyword_cluster: 'jasa' }}

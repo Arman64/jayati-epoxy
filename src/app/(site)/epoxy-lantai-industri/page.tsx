@@ -14,7 +14,8 @@ import {
 } from '@/components/Sections';
 import { QuotationForm } from '@/components/QuotationForm';
 import { IconArrow, IconWhatsApp } from '@/components/Icons';
-import { waLink } from '@/lib/site';
+import { getSettings } from '@/lib/settings';
+import { toContactInfo, waHref } from '@/lib/contact';
 import { TrackedLink } from '@/components/TrackedLink';
 import { getPageCopy } from '@/lib/page-copy';
 import { getProjects } from '@/lib/content-db';
@@ -75,6 +76,7 @@ const industryFaqs = [
 ];
 
 export default async function IndustriPage() {
+  const contact = toContactInfo((await getSettings()).contact);
   const o = await pageOverride(PATH);
   const copy = await getPageCopy(PATH);
   const projects = await getProjects();
@@ -129,7 +131,7 @@ export default async function IndustriPage() {
             />
             <div className="mt-8 flex flex-wrap gap-3">
               <TrackedLink
-                href={waLink('Halo, saya ingin konsultasi epoxy lantai untuk pabrik/gudang.', 'industri-hero')}
+                href={waHref(contact, 'Halo, saya ingin konsultasi epoxy lantai untuk pabrik/gudang.', 'industri-hero')}
                 external
                 event="whatsapp_click"
                 params={{ cta_position: 'hero', keyword_cluster: 'industri' }}

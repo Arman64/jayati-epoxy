@@ -15,6 +15,8 @@ import { getEpoxySystems, getPriceFaqs } from '@/lib/content-db';
 import { PriceCalculator } from '@/components/PriceCalculator';
 import { QuotationForm } from '@/components/QuotationForm';
 import { site } from '@/lib/site';
+import { getSettings } from '@/lib/settings';
+import { toContactInfo } from '@/lib/contact';
 import { IconArrow } from '@/components/Icons';
 import { getPageCopy } from '@/lib/page-copy';
 import { sh } from '@/lib/page-slots';
@@ -46,6 +48,7 @@ const priceFactors = [
 ];
 
 export default async function HargaPage() {
+  const contact = toContactInfo((await getSettings()).contact);
   const [o, epoxySystems, priceFaqs, copy] = await Promise.all([
     pageOverride(PATH),
     getEpoxySystems(),
@@ -203,7 +206,7 @@ export default async function HargaPage() {
               </p>
             </div>
           </div>
-          <PriceCalculator systems={epoxySystems} curvingPrice={curvingPrice} />
+          <PriceCalculator systems={epoxySystems} curvingPrice={curvingPrice} contact={contact} />
         </div>
       </section>
 

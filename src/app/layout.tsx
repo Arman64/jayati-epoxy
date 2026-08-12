@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import { JsonLd } from '@/components/JsonLd';
 import { organizationSchema } from '@/lib/seo';
+import { getSettings } from '@/lib/settings';
 import { site } from '@/lib/site';
 import { ScrollTracker } from '@/components/ScrollTracker';
 
@@ -45,11 +46,23 @@ export const metadata: Metadata = {
  * Chrome situs (Header/Footer/StickyCta) berada di route group (site),
  * sedangkan landing page iklan memakai layout minimal di /lp — PRD §6.
  */
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // JSON-LD ikut Pengaturan Kontak supaya nomor di hasil pencarian Google
+  // tidak tertinggal saat Owner mengganti nomor.
+  const { contact } = await getSettings();
   return (
     <html lang="id" className={sans.variable}>
       <body className="bg-white">
-        <JsonLd data={organizationSchema()} />
+        <JsonLd
+          data={organizationSchema({
+            telephone: contact.phoneE164,
+            email: contact.email,
+            streetAddress: contact.addressStreet,
+            addressLocality: contact.addressCity,
+            addressRegion: contact.addressRegion,
+            postalCode: contact.addressPostal,
+          })}
+        />
         <a
           href="#konten-utama"
           className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-navy-900 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"

@@ -131,14 +131,29 @@ export function defaultSettings(): AllSettings {
   };
 }
 
-/** Gabung nilai database di atas nilai bawaan (per grup, dangkal). */
+/**
+ * Gabung nilai database di atas nilai bawaan (per grup, dangkal).
+ *
+ * Kolom teks yang kosong SENGAJA diabaikan, sesuai janji di halaman Pengaturan:
+ * "kolom yang dikosongkan memakai nilai bawaan". Tanpa aturan ini, satu kolom
+ * yang tak sengaja dikosongkan akan menghapus nomor telepon atau alamat dari
+ * seluruh website — termasuk dari JSON-LD yang dibaca Google.
+ *
+ * Catatan: nilai boolean dan angka tetap dihormati apa adanya (mis. `false`
+ * pada tombol CTA memang berarti "matikan"), yang dibuang hanya string kosong.
+ */
 function merge(rows: Array<{ key: string; value: unknown }>): AllSettings {
   const base = defaultSettings();
   for (const r of rows) {
     const k = r.key as keyof AllSettings;
-    if (k in base && r.value && typeof r.value === 'object') {
-      base[k] = { ...(base[k] as object), ...(r.value as object) } as never;
-    }
+    if (!(k in base) || !r.value || typeof r.value !== 'object') continue;
+
+    const incoming = Object.fromEntries(
+      Object.entries(r.value as Record<string, unknown>).filter(
+        ([, v]) => !(typeof v === 'string' && v.trim() === ''),
+      ),
+    );
+    base[k] = { ...(base[k] as object), ...incoming } as never;
   }
   return base;
 }

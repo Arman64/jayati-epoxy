@@ -3,20 +3,26 @@ import { Footer } from '@/components/Footer';
 import { StickyCta } from '@/components/StickyCta';
 import { FloatingCta } from '@/components/FloatingCta';
 import { buildWaLink, getSettings } from '@/lib/settings';
+import { toContactInfo } from '@/lib/contact';
 
 /** Layout untuk seluruh halaman website publik (bukan landing page iklan). */
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
   const s = await getSettings();
   const { cta, contact } = s;
 
+  // Satu sumber kebenaran: nomor telepon/WA selalu dari pengaturan di basis
+  // data, lalu diturunkan ke komponen. Header dan StickyCta adalah client
+  // component sehingga tidak bisa memanggil getSettings() sendiri.
+  const info = toContactInfo(contact);
+
   return (
     <div className="flex min-h-screen flex-col">
-      <Header />
+      <Header contact={info} />
       <main id="konten-utama" className="flex-1 pb-20 lg:pb-0">
         {children}
       </main>
       <Footer />
-      {cta.stickyMobileEnabled ? <StickyCta /> : null}
+      {cta.stickyMobileEnabled ? <StickyCta contact={info} /> : null}
       {cta.floatingEnabled ? (
         <FloatingCta
           waHref={buildWaLink(contact, undefined, 'floating')}

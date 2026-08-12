@@ -1,14 +1,21 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { IconCheck, IconPhone, IconWhatsApp } from './Icons';
-import { site, waLink } from '@/lib/site';
+import { site } from '@/lib/site';
+import { getSettings } from '@/lib/settings';
+import { toContactInfo, waHref } from '@/lib/contact';
 import { TrackedLink } from './TrackedLink';
 import { ProjectPhoto } from './Sections';
 import type { Project } from '@/lib/content';
 
 /* ------------------------------------------------------------ LP hero */
 
-export function LpHero({
+/** Kontak dari Pengaturan Kontak; dipakai blok-blok landing page. */
+async function lpContact() {
+  return toContactInfo((await getSettings()).contact);
+}
+
+export async function LpHero({
   eyebrow,
   h1,
   benefit,
@@ -54,7 +61,7 @@ export function LpHero({
 
           <div className="mt-8 flex flex-wrap gap-3">
             <TrackedLink
-              href={waLink(waMessage, `lp-${cluster}`)}
+              href={waHref(await lpContact(), waMessage, `lp-${cluster}`)}
               external
               event="whatsapp_click"
               params={{ cta_position: 'lp_hero', keyword_cluster: cluster }}
@@ -183,23 +190,24 @@ export function LpPortfolio({ projects }: { projects: Project[] }) {
 
 /* ----------------------------------------------------- LP sticky mobile */
 
-export function LpStickyCta({ waMessage, cluster }: { waMessage: string; cluster: string }) {
+export async function LpStickyCta({ waMessage, cluster }: { waMessage: string; cluster: string }) {
+  const contact = await lpContact();
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-navy-900/10 bg-white/95 p-2.5 shadow-[0_-4px_20px_rgba(1,30,70,.10)] backdrop-blur lg:hidden">
       <div className="flex items-center gap-2">
         <TrackedLink
-          href={`tel:${site.phoneE164}`}
+          href={`tel:${contact.phoneE164}`}
           external
           event="phone_click"
           params={{ cta_position: 'lp_sticky', keyword_cluster: cluster }}
           className="btn-outline flex-1 !px-3 !py-3 text-[13px]"
-          ariaLabel={`Telepon ${site.phoneDisplay}`}
+          ariaLabel={`Telepon ${contact.phoneDisplay}`}
         >
           <IconPhone className="h-4 w-4" />
           Telepon
         </TrackedLink>
         <TrackedLink
-          href={waLink(waMessage, `lp-sticky-${cluster}`)}
+          href={waHref(contact, waMessage, `lp-sticky-${cluster}`)}
           external
           event="whatsapp_click"
           params={{ cta_position: 'lp_sticky', keyword_cluster: cluster }}

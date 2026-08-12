@@ -7,6 +7,8 @@ import { PriceCalculator } from '@/components/PriceCalculator';
 import { curvingPrice, formatRupiah, projects, priceRange } from '@/lib/content';
 import { getEpoxySystems, getPriceFaqs } from '@/lib/content-db';
 import { site } from '@/lib/site';
+import { getSettings } from '@/lib/settings';
+import { toContactInfo } from '@/lib/contact';
 
 const PATH = '/lp/harga-epoxy-lantai';
 const CLUSTER = 'harga';
@@ -30,6 +32,7 @@ const priceFactors = [
 ];
 
 export default async function LpHarga() {
+  const contact = toContactInfo((await getSettings()).contact);
   const [epoxySystems, priceFaqs] = await Promise.all([getEpoxySystems(), getPriceFaqs()]);
   const priceFloor = Math.min(...epoxySystems.map((x) => x.priceOver500));
   const priceCeiling = Math.max(...epoxySystems.map((x) => x.priceUnder100));
@@ -125,7 +128,7 @@ export default async function LpHarga() {
               ))}
             </div>
           </div>
-          <PriceCalculator systems={epoxySystems} curvingPrice={curvingPrice} />
+          <PriceCalculator systems={epoxySystems} curvingPrice={curvingPrice} contact={contact} />
         </div>
       </section>
 

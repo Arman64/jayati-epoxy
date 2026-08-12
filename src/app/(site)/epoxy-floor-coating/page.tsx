@@ -16,7 +16,9 @@ import { QuotationForm } from '@/components/QuotationForm';
 import { formatRupiah, priceRange } from '@/lib/content';
 import { getEpoxySystems } from '@/lib/content-db';
 import { IconArrow, IconWhatsApp } from '@/components/Icons';
-import { waLink, site } from '@/lib/site';
+import { site } from '@/lib/site';
+import { getSettings } from '@/lib/settings';
+import { toContactInfo, waHref } from '@/lib/contact';
 import { TrackedLink } from '@/components/TrackedLink';
 import { getPageCopy, getPageImages, imageOr } from '@/lib/page-copy';
 import { sh } from '@/lib/page-slots';
@@ -58,6 +60,7 @@ const coatingFaqs = [
 ];
 
 export default async function CoatingPage() {
+  const contact = toContactInfo((await getSettings()).contact);
   const [o, epoxySystems, copy, images] = await Promise.all([
     pageOverride(PATH),
     getEpoxySystems(),
@@ -114,7 +117,7 @@ export default async function CoatingPage() {
             />
             <div className="mt-8 flex flex-wrap gap-3">
               <TrackedLink
-                href={waLink('Halo, saya ingin konsultasi epoxy floor coating.', 'coating-hero')}
+                href={waHref(contact, 'Halo, saya ingin konsultasi epoxy floor coating.', 'coating-hero')}
                 external
                 event="whatsapp_click"
                 params={{ cta_position: 'hero', keyword_cluster: 'coating' }}

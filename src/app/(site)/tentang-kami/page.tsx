@@ -5,6 +5,8 @@ import { pageOverride } from '@/lib/pages';
 import { JsonLd } from '@/components/JsonLd';
 import { AnswerBox, Breadcrumbs, CheckList, CtaBand, Disclaimer, SectionHead } from '@/components/Sections';
 import { site } from '@/lib/site';
+import { getSettings } from '@/lib/settings';
+import { toContactInfo, waHref } from '@/lib/contact';
 import { companyValues, missionStatements, visionStatement, clientCount } from '@/lib/content';
 import { getWorkSteps } from '@/lib/content-db';
 import { getPageCopy } from '@/lib/page-copy';
@@ -47,6 +49,7 @@ const principles = [
 ];
 
 export default async function TentangPage() {
+  const contact = toContactInfo((await getSettings()).contact);
   const [o, workSteps, copy] = await Promise.all([
     pageOverride(PATH),
     getWorkSteps(),
@@ -214,8 +217,8 @@ export default async function TentangPage() {
               ['Badan usaha', site.legalName],
               ['Area layanan', site.serviceArea],
               ['Jam layanan', site.openingHours],
-              ['Telepon', site.phoneDisplay],
-              ['Email', site.email],
+              ['Telepon', contact.phoneDisplay],
+              ['Email', contact.email],
               ['Alamat', `${site.address.street}, ${site.address.locality}, ${site.address.region} ${site.address.postalCode}`],
               ['Fokus layanan', 'Jasa aplikasi epoxy lantai (bukan penjualan material)'],
             ].map(([k, v]) => (

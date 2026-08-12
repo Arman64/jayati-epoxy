@@ -4,11 +4,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { nav, site, waLink, defaultWaMessage, type NavItem } from '@/lib/site';
+import { nav, site, type NavItem } from '@/lib/site';
+import { waHref, type ContactInfo } from '@/lib/contact';
 import { IconChevron, IconClose, IconMenu, IconWhatsApp } from './Icons';
 import { track } from '@/lib/analytics';
 
-export function Header() {
+export function Header({ contact }: { contact: ContactInfo }) {
   const [open, setOpen] = useState(false);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [openMobileGroup, setOpenMobileGroup] = useState<string | null>(null);
@@ -220,7 +221,7 @@ export function Header() {
 
         <div className="flex shrink-0 items-center gap-2">
           <a
-            href={waLink(defaultWaMessage, 'header')}
+            href={waHref(contact, undefined, 'header')}
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => track('whatsapp_click', { cta_position: 'header' })}
@@ -333,14 +334,14 @@ export function Header() {
                 Minta Penawaran
               </Link>
               <a
-                href={waLink(defaultWaMessage, 'mobile-menu')}
+                href={waHref(contact, undefined, 'mobile-menu')}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => track('whatsapp_click', { cta_position: 'mobile_menu' })}
                 className="btn-primary w-full"
               >
                 <IconWhatsApp className="h-4 w-4" />
-                WhatsApp {site.whatsappDisplay}
+                WhatsApp {contact.whatsappDisplay}
               </a>
             </li>
           </ul>

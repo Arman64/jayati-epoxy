@@ -3,7 +3,8 @@ import { pageOverride } from '@/lib/pages';
 import { JsonLd } from '@/components/JsonLd';
 import { Breadcrumbs, SectionHead } from '@/components/Sections';
 import { QuotationForm } from '@/components/QuotationForm';
-import { defaultWaMessage, site, waLink } from '@/lib/site';
+import { getSettings } from '@/lib/settings';
+import { toContactInfo, waHref } from '@/lib/contact';
 import { IconClock, IconMail, IconMapPin, IconPhone, IconWhatsApp } from '@/components/Icons';
 import { TrackedLink } from '@/components/TrackedLink';
 
@@ -25,6 +26,8 @@ export async function generateMetadata() {
 }
 
 export default async function KontakPage() {
+  const { contact: cs } = await getSettings();
+  const contact = toContactInfo(cs);
   const o = await pageOverride(PATH);
   const crumbs = [
     { name: 'Beranda', path: '/' },
@@ -59,13 +62,13 @@ export default async function KontakPage() {
                   <div>
                     <p className="text-[12px] uppercase tracking-wider text-slate-500">WhatsApp</p>
                     <TrackedLink
-                      href={waLink(defaultWaMessage, 'kontak-page')}
+                      href={waHref(contact, undefined, 'kontak-page')}
                       external
                       event="whatsapp_click"
                       params={{ cta_position: 'contact_nap' }}
                       className="text-[15px] font-bold text-navy-900 hover:text-forest-700"
                     >
-                      {site.whatsappDisplay}
+                      {contact.whatsappDisplay}
                     </TrackedLink>
                   </div>
                 </div>
@@ -77,13 +80,13 @@ export default async function KontakPage() {
                   <div>
                     <p className="text-[12px] uppercase tracking-wider text-slate-500">Telepon</p>
                     <TrackedLink
-                      href={`tel:${site.phoneE164}`}
+                      href={`tel:${contact.phoneE164}`}
                       external
                       event="phone_click"
                       params={{ cta_position: 'contact_nap' }}
                       className="text-[15px] font-bold text-navy-900 hover:text-forest-700"
                     >
-                      {site.phoneDisplay}
+                      {contact.phoneDisplay}
                     </TrackedLink>
                   </div>
                 </div>
@@ -94,8 +97,8 @@ export default async function KontakPage() {
                   </span>
                   <div>
                     <p className="text-[12px] uppercase tracking-wider text-slate-500">Email</p>
-                    <a href={`mailto:${site.email}`} className="text-[15px] font-bold text-navy-900 hover:text-forest-700">
-                      {site.email}
+                    <a href={`mailto:${contact.email}`} className="text-[15px] font-bold text-navy-900 hover:text-forest-700">
+                      {contact.email}
                     </a>
                   </div>
                 </div>
@@ -107,9 +110,9 @@ export default async function KontakPage() {
                   <div>
                     <p className="text-[12px] uppercase tracking-wider text-slate-500">Alamat</p>
                     <p className="text-[15px] font-semibold text-navy-900">
-                      {site.address.street}
+                      {cs.addressStreet}
                       <br />
-                      {site.address.locality}, {site.address.region} {site.address.postalCode}
+                      {cs.addressCity}, {cs.addressRegion} {cs.addressPostal}
                     </p>
                   </div>
                 </div>
@@ -120,7 +123,7 @@ export default async function KontakPage() {
                   </span>
                   <div>
                     <p className="text-[12px] uppercase tracking-wider text-slate-500">Jam Layanan</p>
-                    <p className="text-[15px] font-semibold text-navy-900">{site.openingHours}</p>
+                    <p className="text-[15px] font-semibold text-navy-900">{cs.hours}</p>
                   </div>
                 </div>
               </address>

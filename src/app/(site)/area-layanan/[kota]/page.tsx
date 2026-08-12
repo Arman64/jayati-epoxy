@@ -17,7 +17,9 @@ import { cityContents, getCityContent } from '@/lib/cityContent';
 import { formatRupiah, priceRange, projects } from '@/lib/content';
 import { getEpoxySystems } from '@/lib/content-db';
 import { IconArrow, IconMapPin, IconWhatsApp } from '@/components/Icons';
-import { site, waLink } from '@/lib/site';
+import { site } from '@/lib/site';
+import { getSettings } from '@/lib/settings';
+import { toContactInfo, waHref } from '@/lib/contact';
 import { TrackedLink } from '@/components/TrackedLink';
 
 type Props = { params: { kota: string } };
@@ -44,6 +46,7 @@ export function generateMetadata({ params }: Props) {
 }
 
 export default async function CityPage({ params }: Props) {
+  const contact = toContactInfo((await getSettings()).contact);
   const city = getCityContent(params.kota);
   if (!city) notFound();
 
@@ -111,7 +114,7 @@ export default async function CityPage({ params }: Props) {
             </div>
             <div className="mt-7 flex flex-wrap gap-3">
               <TrackedLink
-                href={waLink(`Halo, saya ingin konsultasi epoxy lantai untuk lokasi di ${city.name}.`, `kota-${city.slug}`)}
+                href={waHref(contact, `Halo, saya ingin konsultasi epoxy lantai untuk lokasi di ${city.name}.`, `kota-${city.slug}`)}
                 external
                 event="whatsapp_click"
                 params={{ cta_position: 'hero', city: city.slug }}

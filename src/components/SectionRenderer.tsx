@@ -15,7 +15,9 @@ import {
   getWorkSteps,
 } from '@/lib/content-db';
 import { curvingPrice, formatRupiah, priceRange, projects } from '@/lib/content';
-import { site, waLink } from '@/lib/site';
+import { site } from '@/lib/site';
+import { getSettings } from '@/lib/settings';
+import { toContactInfo, waHref } from '@/lib/contact';
 import { bool, linesOf, num, paragraphsOf, str, type PageSectionRow } from '@/lib/sections';
 
 /**
@@ -159,6 +161,7 @@ async function PriceTableSection({ config }: { config: PageSectionRow['config'] 
 
 async function CalculatorSection({ config }: { config: PageSectionRow['config'] }) {
   const systems = await getEpoxySystems();
+  const contact = toContactInfo((await getSettings()).contact);
   return (
     <Wrap muted={bool(config, 'muted')} id="kalkulator">
       <SectionHead
@@ -167,7 +170,7 @@ async function CalculatorSection({ config }: { config: PageSectionRow['config'] 
         lead={str(config, 'lead') || undefined}
       />
       <div className="mt-8">
-        <PriceCalculator systems={systems} curvingPrice={curvingPrice} />
+        <PriceCalculator systems={systems} curvingPrice={curvingPrice} contact={contact} />
       </div>
     </Wrap>
   );
@@ -380,7 +383,8 @@ function FormSection({ config, source }: { config: PageSectionRow['config']; sou
   );
 }
 
-function CtaSection({ config }: { config: PageSectionRow['config'] }) {
+async function CtaSection({ config }: { config: PageSectionRow['config'] }) {
+  const contact = toContactInfo((await getSettings()).contact);
   const title = str(config, 'title', 'Butuh estimasi untuk area Anda?');
   const body = str(config, 'body', 'Kirim foto lantai dan perkiraan luas area. Kami bantu memilih sistem yang sesuai.');
   const primaryHref = str(config, 'primaryHref', '/kontak');
@@ -398,7 +402,7 @@ function CtaSection({ config }: { config: PageSectionRow['config'] }) {
               <IconArrow className="h-4 w-4" />
             </Link>
             <TrackedLink
-              href={waLink('Halo, saya ingin konsultasi mengenai pekerjaan epoxy lantai.', 'halaman-kustom')}
+              href={waHref(contact, 'Halo, saya ingin konsultasi mengenai pekerjaan epoxy lantai.', 'halaman-kustom')}
               external
               event="whatsapp_click"
               params={{ cta_position: 'section_cta' }}

@@ -68,7 +68,14 @@ export function buildMetadata({
 
 /* ---------------------------------------------------------------- schema */
 
-export function organizationSchema() {
+export function organizationSchema(override?: {
+  telephone?: string;
+  email?: string;
+  streetAddress?: string;
+  addressLocality?: string;
+  addressRegion?: string;
+  postalCode?: string;
+}) {
   return {
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
@@ -79,14 +86,14 @@ export function organizationSchema() {
     logo: `${site.url}/img/logo-jayati.png`,
     image: `${site.url}/img/logo-jayati.png`,
     description: site.description,
-    telephone: site.phoneE164,
-    email: site.email,
+    telephone: override?.telephone || site.phoneE164,
+    email: override?.email || site.email,
     address: {
       '@type': 'PostalAddress',
-      streetAddress: site.address.street,
-      addressLocality: site.address.locality,
-      addressRegion: site.address.region,
-      postalCode: site.address.postalCode,
+      streetAddress: override?.streetAddress || site.address.street,
+      addressLocality: override?.addressLocality || site.address.locality,
+      addressRegion: override?.addressRegion || site.address.region,
+      postalCode: override?.postalCode || site.address.postalCode,
       addressCountry: site.address.country,
     },
     areaServed: { '@type': 'Country', name: 'Indonesia' },
