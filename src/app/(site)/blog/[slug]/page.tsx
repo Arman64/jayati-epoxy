@@ -105,9 +105,7 @@ export default async function PostPage({ params }: Props) {
               <section key={s.h2}>
                 <h2 className="text-xl sm:text-2xl">{s.h2}</h2>
                 {s.body.map((para, i) => (
-                  <p key={i} className="prose-brand mt-3">
-                    {para}
-                  </p>
+                  <p key={i} className="prose-brand mt-3" dangerouslySetInnerHTML={{ __html: para }} />
                 ))}
                 {s.list ? (
                   <ul className="mt-4 space-y-2">
