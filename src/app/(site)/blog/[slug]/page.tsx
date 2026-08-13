@@ -6,6 +6,8 @@ import { AnswerBox, Breadcrumbs, CtaBand, FaqList, SectionHead } from '@/compone
 import { getPublishedPost, getPublishedPosts } from '@/lib/posts';
 import { IconArrow, IconClock } from '@/components/Icons';
 
+export const dynamic = "force-dynamic";
+
 type Props = { params: { slug: string } };
 
 export async function generateStaticParams() {
