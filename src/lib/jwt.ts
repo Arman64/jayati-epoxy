@@ -1,7 +1,6 @@
 import { SignJWT, jwtVerify, type JWTPayload } from 'jose';
-import { randomBytes } from 'crypto';
 
-const SECRET_RAW = process.env.JWT_SECRET || 'jayati-epoxy-default-secret-change-in-production-' + randomBytes(16).toString('hex');
+const SECRET_RAW = process.env.JWT_SECRET || 'jayati-epoxy-jwt-fallback-2026-change-me';
 const SECRET = new TextEncoder().encode(SECRET_RAW);
 
 const EXPIRY = '30d';
@@ -20,7 +19,7 @@ export async function signJwt(payload: Omit<JwtPayload, 'iat' | 'exp' | 'jti'>):
     .setProtectedHeader({ alg: ALG })
     .setIssuedAt()
     .setExpirationTime(EXPIRY)
-    .setJti(randomBytes(8).toString('hex'))
+    .setJti(crypto.randomUUID())
     .sign(SECRET);
 }
 
@@ -29,16 +28,6 @@ export async function verifyJwt(token: string): Promise<JwtPayload | null> {
   try {
     const { payload } = await jwtVerify(token, SECRET, { algorithms: [ALG] });
     return payload as JwtPayload;
-  } catch {
-    return null;
-  }
-}
-
-/** Decode tanpa verifikasi (untuk debug). */
-export function decodeJwtUnsafe(token: string): JwtPayload | null {
-  try {
-    const [, payloadB64] = token.split('.');
-    return JSON.parse(Buffer.from(payloadB64, 'base64url').toString()) as JwtPayload;
   } catch {
     return null;
   }

@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { jwtVerify } from 'jose';
 
 const SESSION_COOKIE = 'jayati_session';
+const JWT_SECRET = process.env.JWT_SECRET || 'jayati-epoxy-jwt-fallback-2026-change-me';
 
 /**
  * Middleware sekarang validasi JWT langsung di Edge runtime.
@@ -17,13 +18,10 @@ export async function middleware(req: NextRequest) {
   let hasValidSession = false;
   if (token) {
     try {
-      const secret = new TextEncoder().encode(
-        process.env.JWT_SECRET || 'jayati-epoxy-default-secret-change-in-production',
-      );
+      const secret = new TextEncoder().encode(JWT_SECRET);
       await jwtVerify(token, secret, { algorithms: ['HS256'] });
       hasValidSession = true;
     } catch {
-      // Token invalid/expired — hapus cookie
       hasValidSession = false;
     }
   }
