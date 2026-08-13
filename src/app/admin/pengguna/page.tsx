@@ -3,6 +3,7 @@ import { listUsers } from '@/lib/leads';
 import { AdminShell } from '../AdminShell';
 import { UserForm } from './UserForm';
 import { UserActions } from './UserActions';
+import { MyProfileForm } from './MyProfileForm';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Pengguna' };
@@ -17,6 +18,18 @@ export default async function UsersPage() {
       <p className="mt-1 text-sm text-slate-600">
         Hanya pemilik yang dapat menambah, mengubah, atau menghapus akun.
       </p>
+
+      <section className="mt-5 rounded-2xl border border-navy-900/10 bg-white p-5 shadow-card">
+        <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500">
+          Profil Saya
+        </h2>
+        <p className="mt-1 text-xs text-slate-600">
+          Edit nama, email, atau kata sandi akun Anda.
+        </p>
+        <div className="mt-3 max-w-md">
+          <MyProfileForm name={user.name} email={user.email} />
+        </div>
+      </section>
 
       <div className="mt-5 grid gap-3 lg:grid-cols-[1.3fr_1fr]">
         <section className="overflow-hidden rounded-2xl border border-navy-900/10 bg-white shadow-card">
