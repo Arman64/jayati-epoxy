@@ -2,6 +2,7 @@ import { requireOwner } from '@/lib/auth';
 import { listUsers } from '@/lib/leads';
 import { AdminShell } from '../AdminShell';
 import { UserForm } from './UserForm';
+import { UserActions } from './UserActions';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Pengguna' };
@@ -14,7 +15,7 @@ export default async function UsersPage() {
     <AdminShell user={user} active="/admin/pengguna">
       <h1 className="text-2xl font-extrabold tracking-tight text-navy-900">Pengguna</h1>
       <p className="mt-1 text-sm text-slate-600">
-        Hanya pemilik yang dapat menambah atau menonaktifkan akun.
+        Hanya pemilik yang dapat menambah, mengubah, atau menghapus akun.
       </p>
 
       <div className="mt-5 grid gap-3 lg:grid-cols-[1.3fr_1fr]">
@@ -27,6 +28,7 @@ export default async function UsersPage() {
                 <th scope="col" className="px-4 py-3 font-bold text-navy-900">Email</th>
                 <th scope="col" className="px-4 py-3 font-bold text-navy-900">Peran</th>
                 <th scope="col" className="px-4 py-3 font-bold text-navy-900">Status</th>
+                <th scope="col" className="px-4 py-3 font-bold text-navy-900">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-navy-900/8">
@@ -47,6 +49,9 @@ export default async function UsersPage() {
                     >
                       {u.isActive ? 'Aktif' : 'Nonaktif'}
                     </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <UserActions user={u} isSelf={u.id === user.id} />
                   </td>
                 </tr>
               ))}
