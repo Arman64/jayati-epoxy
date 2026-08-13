@@ -60,10 +60,14 @@ export async function POST(request: Request) {
       );
     }
 
-    await createSession(Number(user.id));
+    const sessionId = await createSession(Number(user.id));
     clearLoginAttempts(ip);
 
-    return NextResponse.json({ ok: true }, { status: 200 });
+    const res = NextResponse.json({ ok: true }, { status: 200 });
+    // Set cookie pada response langsung (lebih reliable daripada cookies().set)
+    const expires = new Date(Date.now() + 30 * 86_400_000);
+    res.headers.append('Set-Cookie', `jayati_session=${sessionId}; Path=/; HttpOnly; SameSite=Lax; Secure; Expires=${expires.toUTCString()}`);
+    return res;
   } catch (err) {
     console.error('[admin/login] gagal:', err);
     return NextResponse.json(
