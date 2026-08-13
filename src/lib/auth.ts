@@ -1,12 +1,12 @@
 import 'server-only';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { randomUUID, timingSafeEqual } from 'crypto';
+import { timingSafeEqual } from 'crypto';
 import bcrypt from 'bcryptjs';
 import { query, queryOne } from './db';
+import { signJwt, verifyJwt, type JwtPayload } from './jwt';
 
 export const SESSION_COOKIE = 'jayati_session';
-const SESSION_DAYS = 7;
 
 export type Role = 'owner' | 'staff';
 
@@ -27,56 +27,45 @@ export function verifyPassword(plain: string, hash: string): Promise<boolean> {
   return bcrypt.compare(plain, hash);
 }
 
-/* ---------------- sesi ---------------- */
+/* ---------------- sesi (JWT) ---------------- */
 
-export async function createSession(userId: number): Promise<string> {
-  const id = randomUUID();
-  const expires = new Date(Date.now() + SESSION_DAYS * 86_400_000);
-
-  await query('INSERT INTO sessions (id, user_id, expires_at) VALUES ($1, $2, $3)', [
-    id,
-    userId,
-    expires,
-  ]);
+/** Buat JWT token dan update last_login_at user. */
+export async function createSession(userId: number, user: { email: string; name: string; role: Role }): Promise<string> {
   await query('UPDATE users SET last_login_at = now() WHERE id = $1', [userId]);
-
-  return id;
+  const token = await signJwt({ userId, email: user.email, name: user.name, role: user.role });
+  return token;
 }
 
+/** Hanya clear cookie — tidak perlu hapus session di DB. */
 export async function destroySession(): Promise<void> {
-  const id = cookies().get(SESSION_COOKIE)?.value;
-  if (id) await query('DELETE FROM sessions WHERE id = $1', [id]);
   cookies().delete(SESSION_COOKIE);
 }
 
 /**
- * Sumber kebenaran autentikasi. Middleware hanya mengecek keberadaan cookie
- * (Edge runtime tidak bisa akses Postgres) — validasi sebenarnya ada di sini
- * dan dipanggil ulang di setiap halaman & API admin.
+ * Sumber kebenaran autentikasi — sekarang pakai JWT.
+ * Tidak perlu query database! Decode token langsung.
  */
 export async function getSessionUser(): Promise<SessionUser | null> {
-  const id = cookies().get(SESSION_COOKIE)?.value;
-  if (!id) return null;
+  const token = cookies().get(SESSION_COOKIE)?.value;
+  if (!token) return null;
 
-  // Format UUID divalidasi dulu supaya query tidak error untuk cookie sampah.
-  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) return null;
+  const payload = await verifyJwt(token);
+  if (!payload) return null;
 
-  const row = await queryOne<{
-    id: string;
-    email: string;
-    name: string;
-    role: Role;
-    is_active: boolean;
-  }>(
-    `SELECT u.id, u.email, u.name, u.role, u.is_active
-       FROM sessions s
-       JOIN users u ON u.id = s.user_id
-      WHERE s.id = $1 AND s.expires_at > now()`,
-    [id],
+  // Validasi extra: pastikan user masih active di DB (sekali query, ringan)
+  const row = await queryOne<{ is_active: boolean }>(
+    'SELECT is_active FROM users WHERE id = $1',
+    [payload.userId],
   );
 
   if (!row || !row.is_active) return null;
-  return { id: Number(row.id), email: row.email, name: row.name, role: row.role };
+
+  return {
+    id: payload.userId,
+    email: payload.email,
+    name: payload.name,
+    role: payload.role,
+  };
 }
 
 /** Dipakai di halaman admin: lempar ke login bila belum masuk. */
@@ -124,9 +113,6 @@ export function safeEqual(a: string, b: string): boolean {
 
 /**
  * Mendeteksi apakah kata sandi demo dari ADMIN.md masih terpasang.
- * Kata sandi tersebut tertulis di repositori, jadi harus dianggap bocor.
- * Dipakai untuk memunculkan peringatan di dasbor, bukan untuk memblokir login
- * agar pemilik tidak terkunci dari panelnya sendiri.
  */
 export async function demoCredentialsInUse(): Promise<string[]> {
   const demo: Array<[string, string]> = [

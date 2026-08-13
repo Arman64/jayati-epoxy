@@ -1,0 +1,53 @@
+{
+  "tool": "update_draft",
+  "request_id": "edit-hitung",
+  "params": {
+    "post_id": 1,
+    "intro": "Estimasi biaya epoxy lantai dihitung dari luas area dikalikan harga sistem per m², ditambah biaya persiapan permukaan dan perbaikan. Perhitungan mandiri berguna untuk menyiapkan anggaran, tetapi angka pasti baru bisa dipastikan setelah survei langsung. Panduan ini membantu kamu memahami komponen biaya agar lebih siap saat berdiskusi dengan <a href=\"/kontak\" class=\"text-forest-700 underline decoration-leaf-400\">kontraktor epoxy lantai</a>.",
+    "sections": [
+      {
+        "h2": "Langkah 1: Ukur Luas Area dengan Benar",
+        "body": [
+          "Ukur panjang dikali lebar untuk setiap bidang, lalu jumlahkan. Untuk ruang berbentuk tidak beraturan, pecah menjadi persegi atau persegi panjang lebih kecil. Kesalahan pengukuran yang paling sering terjadi adalah tidak mengurangi area pondasi mesin atau kolom yang tidak perlu dilapisi.",
+          "Kurangi area yang tidak dilapisi seperti pondasi mesin atau kolom, dan tambahkan area naik seperti plinth atau dinding bawah setinggi 10–15 cm. Area naik ini penting di <a href=\"/blog/epoxy-lantai-gudang\" class=\"text-forest-700 underline decoration-leaf-400\">gudang dan area produksi</a> agar lantai lebih mudah dibersihkan."
+        ]
+      },
+      {
+        "h2": "Langkah 2: Tentukan Sistem yang Sesuai Penggunaan",
+        "body": [
+          "Sistem yang berlebihan membuat biaya membengkak, sedangkan sistem yang terlalu tipis membuat lantai cepat rusak. Untuk gudang dengan forklift ringan, <a href=\"/jasa-epoxy-lantai\" class=\"text-forest-700 underline decoration-leaf-400\">self-leveling 1.500–2.000 micron</a> sudah memadai. Untuk area basah atau cold storage, pertimbangkan PU Crete yang lebih tahan suhu ekstrem.",
+          "Kalau masih ragu soal perbedaan bahan, baca <a href=\"/blog/epoxy-vs-keramik-untuk-lantai\" class=\"text-forest-700 underline decoration-leaf-400\">perbandingan epoxy dengan keramik</a> untuk gambaran lebih luas."
+        ]
+      },
+      {
+        "h2": "Langkah 3: Masukkan Biaya Persiapan Permukaan",
+        "body": [
+          "Persiapan permukaan sering menjadi selisih terbesar antara estimasi kasar dan harga final. Beton baru yang masih basah, retak, atau berminyak butuh perlakuan khusus sebelum epoxy bisa menempel dengan baik. Biaya grinding, penambalan retak, dan penanganan kelembapan ini harus sudah diperhitungkan sejak awal.",
+          "Item yang perlu diperhitungkan meliputi grinding, penambalan retak, leveling, serta penanganan kelembapan atau kontaminasi minyak. Detail lengkap soal tahapan persiapan dan aplikasi bisa dibaca di <a href=\"/blog/tahapan-pemasangan-epoxy-lantai\" class=\"text-forest-700 underline decoration-leaf-400\">artikel tahapan pemasangan epoxy lantai</a>."
+        ]
+      },
+      {
+        "h2": "Langkah 4: Susun Rentang, Bukan Angka Tunggal",
+        "body": [
+          "Karena kondisi lantai baru diketahui pasti saat survei, susun anggaran sebagai rentang bawah dan atas. Biasanya selisihnya 15–25% dari estimasi awal. Ini memberi ruang untuk penyesuaian tanpa kaget saat menerima penawaran resmi.",
+          "Untuk estimasi harga awal berdasarkan luas area, lihat <a href=\"/harga-epoxy-lantai\" class=\"text-forest-700 underline decoration-leaf-400\">daftar harga epoxy lantai kami</a> yang sudah termasuk material dan pemasangan."
+        ]
+      }
+    ],
+    "faqs": [
+      {
+        "q": "Apakah bisa minta survei gratis?",
+        "a": "Ya, kami menyediakan survei gratis untuk area di Jawa Timur dan sekitarnya. Hubungi kami lewat WhatsApp atau form kontak untuk menjadwalkan."
+      },
+      {
+        "q": "Berapa minimal luas area untuk pemasangan epoxy?",
+        "a": "Tidak ada batas minimal, namun biaya mobilisasi dan setup perlu diperhitungkan untuk area yang sangat kecil. Konsultasikan dengan tim kami untuk estimasi yang adil."
+      },
+      {
+        "q": "Apakah harga sudah termasuk material?",
+        "a": "Ya, harga yang kami cantumkan sudah termasuk material, pemasangan, dan garansi. Rincian material dan merek akan dicantumkan dalam penawaran tertulis."
+      }
+    ],
+    "readMinutes": 6
+  }
+}
