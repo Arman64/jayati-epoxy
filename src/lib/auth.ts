@@ -40,14 +40,6 @@ export async function createSession(userId: number): Promise<string> {
   ]);
   await query('UPDATE users SET last_login_at = now() WHERE id = $1', [userId]);
 
-  cookies().set(SESSION_COOKIE, id, {
-    httpOnly: true,
-    sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
-    path: '/',
-    expires,
-  });
-
   return id;
 }
 
