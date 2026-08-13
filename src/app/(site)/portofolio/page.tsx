@@ -3,8 +3,7 @@ import { buildMetadata, breadcrumbSchema } from '@/lib/seo';
 import { pageOverride } from '@/lib/pages';
 import { JsonLd } from '@/components/JsonLd';
 import { Breadcrumbs, CtaBand, Disclaimer, ProjectPhoto, SectionHead } from '@/components/Sections';
-import { clientCount, clientGroups } from '@/lib/content';
-import { getProjects } from '@/lib/content-db';
+import { getProjects, clientGroups, clientCount } from '@/lib/content-db';
 import { IconArrow, IconCheck } from '@/components/Icons';
 import { site } from '@/lib/site';
 import { getPageCopy } from '@/lib/page-copy';
@@ -28,9 +27,13 @@ export async function generateMetadata() {
 }
 
 export default async function PortofolioPage() {
-  const o = await pageOverride(PATH);
-  const copy = await getPageCopy(PATH);
-  const projects = await getProjects();
+  const [o, copy, projects, groups, count] = await Promise.all([
+    pageOverride(PATH),
+    getPageCopy(PATH),
+    getProjects(),
+    clientGroups(),
+    clientCount(),
+  ]);
   const crumbs = [
     { name: 'Beranda', path: '/' },
     { name: 'Portofolio', path: PATH },
@@ -105,9 +108,9 @@ export default async function PortofolioPage() {
       {/* ------------------------------------------------------ DAFTAR KLIEN */}
       <section className="bg-cream-100 py-14 sm:py-16">
         <div className="container-page">
-          <SectionHead {...sh(copy, 'daftar-klien', { eyebrow: 'Daftar Klien', title: `${clientCount} unit telah kami kerjakan`, lead: 'Daftar berikut disalin dari company profile resmi perusahaan, bagian “Our Projects — Cat Epoxy Lantai 2026”.' })} as="h2" />
+          <SectionHead {...sh(copy, 'daftar-klien', { eyebrow: 'Daftar Klien', title: `${count} unit telah kami kerjakan`, lead: 'Daftar berikut disalin dari company profile resmi perusahaan, bagian "Our Projects — Cat Epoxy Lantai 2026".' })} as="h2" />
           <div className="mt-8 space-y-6">
-            {clientGroups.map((g) => (
+            {groups.map((g) => (
               <div key={g.category} className="rounded-3xl border border-navy-900/10 bg-white p-6 sm:p-7">
                 <h3 className="text-lg">{g.category}</h3>
                 <p className="prose-brand mt-1.5 text-[14px]">{g.note}</p>

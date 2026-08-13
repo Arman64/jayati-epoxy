@@ -352,3 +352,24 @@ export async function getProjects(): Promise<typeof fallback.projects> {
     hasRealPhoto: Boolean(r.hasRealPhoto),
   }));
 }
+
+/* ── Client groups ────────────────────────────────────────── */
+type ClientGroup = { category: string; note: string; clients: string[] };
+
+export async function clientGroups(): Promise<ClientGroup[]> {
+  try {
+    const rows = await query('SELECT * FROM client_groups ORDER BY sort_order, id');
+    return rows.map((r: Record<string, unknown>) => ({
+      category: String(r.category ?? ''),
+      note: String(r.note ?? ''),
+      clients: Array.isArray(r.clients) ? r.clients.map(String) : [],
+    }));
+  } catch {
+    return [];
+  }
+}
+
+export async function clientCount(): Promise<number> {
+  const groups = await clientGroups();
+  return groups.reduce((n, g) => n + g.clients.length, 0);
+}

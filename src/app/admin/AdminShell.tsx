@@ -10,6 +10,7 @@ const links = [
   { href: '/admin/halaman', label: 'Halaman', ownerOnly: true },
   { href: '/admin/pengaturan', label: 'Pengaturan', ownerOnly: true },
   { href: '/admin/mcp', label: 'Otomasi', ownerOnly: true },
+  { href: '/admin/klien', label: 'Klien', ownerOnly: true },
   { href: '/admin/pengguna', label: 'Pengguna', ownerOnly: true },
 ];
 
