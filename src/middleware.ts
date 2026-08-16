@@ -2,7 +2,10 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { jwtVerify } from 'jose';
 
 const SESSION_COOKIE = 'jayati_session';
-const JWT_SECRET = process.env.JWT_SECRET || 'jayati-epoxy-jwt-fallback-2026-change-me';
+// KEAMANAN: Fallback hanya untuk development. Production akan throw jika JWT_SECRET tidak diset
+// (karena jwt.ts sudah melakukan pengecekan tersebut saat startup).
+const JWT_SECRET =
+  process.env.JWT_SECRET ?? 'dev-only-insecure-fallback-do-not-use-in-production-2026';
 
 /**
  * Middleware sekarang validasi JWT langsung di Edge runtime.

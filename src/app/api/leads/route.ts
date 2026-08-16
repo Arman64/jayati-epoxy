@@ -4,10 +4,37 @@ import { saveLead } from '@/lib/leads';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+// Domain yang diizinkan untuk submit form — CSRF protection (M-01)
+const ALLOWED_ORIGINS = [
+  'https://jayatiepoxy.id',
+  'https://www.jayatiepoxy.id',
+  'https://jayati-epoxy.vercel.app',
+  // Preview deployments Vercel: https://jayati-epoxy-git-*.vercel.app
+];
+
+/** Periksa apakah origin diizinkan (termasuk preview deployment Vercel). */
+function isAllowedOrigin(origin: string | null): boolean {
+  if (!origin) return false; // Tolak jika tidak ada Origin header
+  if (ALLOWED_ORIGINS.includes(origin)) return true;
+  // Izinkan semua Vercel preview deployments dari repo yang sama
+  if (/^https:\/\/jayati-epoxy(-git-[a-z0-9-]+)?-[a-z0-9]+\.vercel\.app$/.test(origin)) return true;
+  // Izinkan localhost untuk development
+  if (process.env.NODE_ENV !== 'production' && /^https?:\/\/localhost(:\d+)?$/.test(origin)) return true;
+  return false;
+}
+
 /** Rate limit sederhana in-memory. Produksi: pindah ke Redis/Upstash — PRD §7 */
 const hits = new Map<string, { count: number; resetAt: number }>();
 const WINDOW_MS = 10 * 60 * 1000;
 const MAX_PER_WINDOW = 5;
+
+// Cleanup entry yang sudah expired setiap 15 menit untuk mencegah memory leak
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, entry] of hits) {
+    if (now > entry.resetAt) hits.delete(key);
+  }
+}, 15 * 60 * 1000);
 
 function rateLimited(ip: string): boolean {
   const now = Date.now();
@@ -28,6 +55,15 @@ function clean(v: FormDataEntryValue | null, max = 500): string {
 }
 
 export async function POST(request: Request) {
+  // CSRF protection: periksa Origin header — M-01
+  const origin = request.headers.get('origin');
+  if (!isAllowedOrigin(origin)) {
+    return NextResponse.json(
+      { ok: false, error: 'Permintaan ditolak.' },
+      { status: 403 },
+    );
+  }
+
   const ip =
     request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
     request.headers.get('x-real-ip') ??

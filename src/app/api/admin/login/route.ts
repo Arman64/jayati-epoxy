@@ -11,10 +11,34 @@ import {
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+// Domain yang diizinkan mengakses admin login — CSRF protection
+const ALLOWED_ADMIN_ORIGINS = [
+  'https://jayatiepoxy.id',
+  'https://www.jayatiepoxy.id',
+  'https://jayati-epoxy.vercel.app',
+];
+
+function isAllowedAdminOrigin(origin: string | null): boolean {
+  if (!origin) return true; // Izinkan server-side/curl tanpa origin (monitoring tools)
+  if (ALLOWED_ADMIN_ORIGINS.includes(origin)) return true;
+  if (/^https:\/\/jayati-epoxy(-git-[a-z0-9-]+)?-[a-z0-9]+\.vercel\.app$/.test(origin)) return true;
+  if (process.env.NODE_ENV !== 'production' && /^https?:\/\/localhost(:\d+)?$/.test(origin)) return true;
+  return false;
+}
+
 /** Hash tiruan agar waktu respons login sama untuk email ada / tidak ada. */
 const DUMMY_HASH = '$2b$12$C6UzMDM.H6dfI/f/IKcEe.aQF5rCBLpQXWH6uZ0aJ3lQyGZ3qYyPu';
 
 export async function POST(request: Request) {
+  // CSRF protection: validasi Origin header
+  const origin = request.headers.get('origin');
+  if (!isAllowedAdminOrigin(origin)) {
+    return NextResponse.json(
+      { ok: false, error: 'Permintaan ditolak.' },
+      { status: 403 },
+    );
+  }
+
   const ip =
     request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
     request.headers.get('x-real-ip') ??
@@ -23,7 +47,10 @@ export async function POST(request: Request) {
   if (loginRateLimited(ip)) {
     return NextResponse.json(
       { ok: false, error: 'Terlalu banyak percobaan masuk. Coba lagi dalam 10 menit.' },
-      { status: 429 },
+      {
+        status: 429,
+        headers: { 'Retry-After': '600' }, // 10 menit dalam detik
+      },
     );
   }
 

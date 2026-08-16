@@ -82,11 +82,22 @@ export async function requireOwner(): Promise<SessionUser> {
 }
 
 /* ---------------- rate limit login ---------------- */
+// CATATAN PRODUKSI (H-02): Rate limit ini berjalan in-memory per instance.
+// Pada serverless multi-instance, counter tidak dibagi antar instance.
+// Untuk perlindungan lebih kuat, migrasi ke Upstash Redis / Vercel KV.
 
 type Attempt = { count: number; first: number };
 const attempts = new Map<string, Attempt>();
 const MAX_ATTEMPTS = 8;
 const WINDOW_MS = 10 * 60_000;
+
+// Cleanup otomatis setiap 20 menit agar Map tidak tumbuh tanpa batas (H-02)
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, rec] of attempts) {
+    if (now - rec.first > WINDOW_MS) attempts.delete(key);
+  }
+}, 20 * 60_000);
 
 export function loginRateLimited(key: string): boolean {
   const now = Date.now();
@@ -103,6 +114,7 @@ export function clearLoginAttempts(key: string): void {
   attempts.delete(key);
 }
 
+
 /** Perbandingan waktu-tetap untuk token non-hash. */
 export function safeEqual(a: string, b: string): boolean {
   const ba = Buffer.from(a);
@@ -112,12 +124,21 @@ export function safeEqual(a: string, b: string): boolean {
 }
 
 /**
- * Mendeteksi apakah kata sandi demo dari ADMIN.md masih terpasang.
+ * Mendeteksi apakah kata sandi demo masih terpasang.
+ * Password demo dibaca dari env vars DEMO_OWNER_PASSWORD / DEMO_STAFF_PASSWORD
+ * agar tidak hardcode di source code (C-03).
+ * Jika env vars tidak diset, fungsi ini menganggap tidak ada demo aktif.
  */
 export async function demoCredentialsInUse(): Promise<string[]> {
+  const demoOwnerPass = process.env.DEMO_OWNER_PASSWORD;
+  const demoStaffPass = process.env.DEMO_STAFF_PASSWORD;
+
+  // Jika tidak ada env var yang diset, tidak ada yang perlu dicek.
+  if (!demoOwnerPass && !demoStaffPass) return [];
+
   const demo: Array<[string, string]> = [
-    ['owner@jayatiepoxy.id', 'JayatiDemo2026!'],
-    ['staff@jayatiepoxy.id', 'StafDemo2026!'],
+    ...(demoOwnerPass ? [['owner@jayatiepoxy.id', demoOwnerPass] as [string, string]] : []),
+    ...(demoStaffPass ? [['staff@jayatiepoxy.id', demoStaffPass] as [string, string]] : []),
   ];
 
   const found: string[] = [];
@@ -132,3 +153,4 @@ export async function demoCredentialsInUse(): Promise<string[]> {
   }
   return found;
 }
+
