@@ -1,30 +1,36 @@
 import { SignJWT, jwtVerify, type JWTPayload } from 'jose';
 
 // KEAMANAN: JWT_SECRET WAJIB diset di environment variables.
-// Jangan pernah gunakan fallback hardcoded di production.
 // Set JWT_SECRET di Vercel Dashboard → Settings → Environment Variables.
-if (!process.env.JWT_SECRET) {
-  // Di development (localhost), izinkan fallback dev-only dengan peringatan.
-  // Di production (Vercel), ini akan menyebabkan build gagal dengan pesan yang jelas.
-  if (process.env.NODE_ENV === 'production') {
-    throw new Error(
-      '[SECURITY] JWT_SECRET environment variable tidak diset! ' +
-      'Tambahkan JWT_SECRET ke Vercel Dashboard → Settings → Environment Variables. ' +
-      'Generate dengan: openssl rand -hex 32',
-    );
-  }
+// Pengecekan dilakukan di dalam fungsi (bukan module-level) agar server
+// tidak crash saat startup — melainkan redirect graceful ke halaman login.
+if (!process.env.JWT_SECRET && process.env.NODE_ENV !== 'production') {
   console.warn(
     '[SECURITY WARNING] JWT_SECRET tidak diset. Menggunakan dev-only fallback. ' +
-    'Jangan deploy ke production tanpa menyetel JWT_SECRET!',
+    'Jangan deploy ke production tanpa menyetel JWT_SECRET di Vercel Dashboard!',
   );
 }
 
-const SECRET_RAW =
-  process.env.JWT_SECRET ?? 'dev-only-insecure-fallback-do-not-use-in-production-2026';
-const SECRET = new TextEncoder().encode(SECRET_RAW);
+const EXPIRY = '14d'; // Dikurangi dari 30d → 14d
+const ALG   = 'HS256';
 
-const EXPIRY = '14d'; // Dikurangi dari 30d → 14d untuk memperkecil jendela penyalahgunaan token
-const ALG = 'HS256';
+/** Ambil SECRET — throw hanya di dalam fungsi agar server tidak crash saat modul dimuat. */
+function getSecret(): Uint8Array {
+  const raw = process.env.JWT_SECRET;
+  if (!raw) {
+    if (process.env.NODE_ENV === 'production') {
+      // Ini hanya akan tercapai saat sign/verify dipanggil, BUKAN saat modul dimuat.
+      // verifyJwt menangkap exception ini dan mengembalikan null (→ redirect ke login).
+      throw new Error(
+        '[SECURITY] JWT_SECRET tidak diset di Vercel Environment Variables! ' +
+        'Tambahkan JWT_SECRET di Vercel Dashboard → Settings → Environment Variables.',
+      );
+    }
+    // Development: gunakan fallback agar dev server tetap berjalan
+    return new TextEncoder().encode('dev-only-insecure-fallback-do-not-use-in-production-2026');
+  }
+  return new TextEncoder().encode(raw);
+}
 
 export type JwtPayload = JWTPayload & {
   userId: number;
@@ -33,22 +39,27 @@ export type JwtPayload = JWTPayload & {
   role: 'owner' | 'staff';
 };
 
-/** Buat JWT token baru. */
+/** Buat JWT token baru. Melempar Error jika JWT_SECRET tidak diset di production. */
 export async function signJwt(payload: Omit<JwtPayload, 'iat' | 'exp' | 'jti'>): Promise<string> {
   return new SignJWT({ ...payload })
     .setProtectedHeader({ alg: ALG })
     .setIssuedAt()
     .setExpirationTime(EXPIRY)
     .setJti(crypto.randomUUID())
-    .sign(SECRET);
+    .sign(getSecret());
 }
 
-/** Verifikasi dan decode JWT. Return null kalau invalid/expired. */
+/**
+ * Verifikasi dan decode JWT.
+ * Return null jika token invalid, expired, ATAU JWT_SECRET tidak diset
+ * (graceful degradation: dianggap belum login → middleware redirect ke login).
+ */
 export async function verifyJwt(token: string): Promise<JwtPayload | null> {
   try {
-    const { payload } = await jwtVerify(token, SECRET, { algorithms: [ALG] });
+    const { payload } = await jwtVerify(token, getSecret(), { algorithms: [ALG] });
     return payload as JwtPayload;
   } catch {
+    // Termasuk kasus JWT_SECRET tidak diset → return null → redirect ke login
     return null;
   }
 }
