@@ -504,7 +504,7 @@ export const clientGroups: ClientGroup[] = [
   {
     category: 'Lapangan Olahraga',
     note: 'Pelapisan lantai lapangan olahraga indoor.',
-    clients: ['Lapangan Padel Jakarta'],
+    clients: ['Backspin Lapangan Padel DKI Jakarta'],
   },
 ];
 

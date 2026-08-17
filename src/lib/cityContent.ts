@@ -158,7 +158,7 @@ export const cityContents: CityContent[] = [
     operationalNote:
       'Pekerjaan di gedung bertingkat memerlukan koordinasi izin kerja dengan building management, termasuk pengaturan jalur material dan ketersediaan sumber listrik untuk mesin.',
     typicalSystems: ['self-leveling-2000-micron', 'pu-crete-3000-micron', 'pu-crete-4000-micron'],
-    realProjects: ['Lapangan Padel Jakarta'],
+    realProjects: ['Backspin Lapangan Padel DKI Jakarta'],
   },
 ];
 
