@@ -214,9 +214,9 @@ export const coreServices: Service[] = [
   { slug: 'epoxy-lantai-industri', title: 'Epoxy Lantai Industri', short: 'Pabrik, pergudangan, industri kimia, dan area produksi beban berat.', icon: 'factory' },
   { slug: 'epoxy-floor-coating', title: 'Epoxy Floor Coating', short: 'Pelapisan lantai beton untuk area komersial dan produksi.', icon: 'layers' },
   { slug: 'epoxy-lantai-rumah', title: 'Epoxy Lantai Rumah', short: 'Garasi, carport, dapur, dan area hunian yang menuntut lantai mudah dibersihkan.', icon: 'home' },
-  { slug: 'clean-room', title: 'Clean Room & Sandwich Panel', short: 'Panel berinsulasi 50–150 mm untuk clean room dan cold room.', icon: 'shield' },
-  { slug: 'ducting-hvac', title: 'Ducting & HVAC', short: 'Fabrikasi dan instalasi ducting GI, SS, atau Aluminium dengan leakage test.', icon: 'droplet' },
-  { slug: 'repaint-epoxy', title: 'Repaint & Floor Repair', short: 'Pembaruan lapisan epoxy yang kusam, tergores, atau menurun kualitasnya.', icon: 'ruler' },
+  { slug: 'clean-room', title: 'Clean Room & Sandwich Panel', short: 'Panel berinsulasi 50–150 mm untuk clean room dan cold room.', icon: 'shield', href: '/blog/clean-room-sandwich-panel' },
+  { slug: 'ducting-hvac', title: 'Ducting & HVAC', short: 'Fabrikasi dan instalasi ducting GI, SS, atau Aluminium dengan leakage test.', icon: 'droplet', href: '/blog/ducting-hvac' },
+  { slug: 'repaint-epoxy', title: 'Repaint & Floor Repair', short: 'Pembaruan lapisan epoxy yang kusam, tergores, atau menurun kualitasnya.', icon: 'ruler', href: '/blog/repaint-floor-repair' },
 ];
 
 export type ProjectPhoto = {
