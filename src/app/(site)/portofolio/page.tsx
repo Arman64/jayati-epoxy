@@ -9,6 +9,8 @@ import { site } from '@/lib/site';
 import { getPageCopy } from '@/lib/page-copy';
 import { sh } from '@/lib/page-slots';
 
+export const dynamic = 'force-dynamic';
+
 const PATH = '/portofolio';
 
 const DEFAULT_TITLE = 'Portofolio Proyek Epoxy Lantai';
