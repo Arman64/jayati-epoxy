@@ -98,7 +98,7 @@ export default async function PostPage({ params }: Props) {
 
           <div className="mt-7">
             <AnswerBox>
-              <p>{post.intro}</p>
+              <p dangerouslySetInnerHTML={{ __html: post.intro }} />
             </AnswerBox>
           </div>
 
