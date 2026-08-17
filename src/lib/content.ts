@@ -208,6 +208,7 @@ export type Service = {
   title: string;
   short: string;
   icon: 'home' | 'factory' | 'shield' | 'layers' | 'droplet' | 'ruler';
+  href?: string;
 };
 
 export const coreServices: Service[] = [
